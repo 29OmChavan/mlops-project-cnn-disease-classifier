@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+logs/
+mlruns/
+.dvc/
+artifacts/data_ingestion/
+artifacts/prepare_base_model/
+tests/
+docs/
+notebooks/
+.env

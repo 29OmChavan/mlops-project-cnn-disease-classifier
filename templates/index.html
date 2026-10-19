@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production MLOps Project 02 · CNN Disease Detection System</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --green: #3fb950;
+            --accent: #58a6ff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 960px; margin: 0 auto; }
+        .header { margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 18px; }
+        .tag { color: var(--green); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+        h1 { font-size: 28px; margin-top: 6px; }
+        .grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+        .card h2 { font-size: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        input[type="file"] {
+            width: 100%; padding: 12px; border: 1px dashed var(--border); border-radius: 8px;
+            background: var(--bg); color: var(--text); margin-bottom: 14px;
+        }
+        button {
+            width: 100%; padding: 12px; background: var(--green); color: #0d1117;
+            border: none; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer;
+        }
+        .result-box {
+            margin-top: 18px; padding: 16px; border-radius: 8px;
+            background: rgba(63, 185, 80, 0.08); border: 1px solid var(--green); display: none;
+        }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .stat-val { font-weight: 600; color: var(--green); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="tag">Project 02 · Deep Learning & Computer Vision · DVC + MLflow</div>
+        <h1>Pathology & Poultry Disease Classification System</h1>
+        <p style="color:var(--muted); font-size:14px;">ResNet-18 Transfer Learning · Dynamic INT8 Quantization · Multi-Cloud AWS & Azure CI/CD</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Upload Pathology / Microscopy Image</h2>
+            <input type="file" id="imageInput" accept="image/*">
+            <button onclick="runInference()">Run CNN Diagnostic Inference</button>
+
+            <div id="resultBox" class="result-box">
+                <div style="font-size:12px; color:var(--muted);">Predicted Diagnosis</div>
+                <div id="predClass" style="font-size:26px; font-weight:700; color:var(--green);"></div>
+                <div id="predConf" style="font-size:13px; margin-top:4px;"></div>
+                <div id="predGuidance" style="font-size:13px; color:var(--muted); margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>DVC & MLflow Evaluation Telemetry (scores.json)</h2>
+            {% if scores %}
+            <div class="stat-row"><span>Validation Accuracy</span><span class="stat-val">{{ (scores.accuracy * 100) | round(2) }}%</span></div>
+            <div class="stat-row"><span>Macro F1-Score</span><span class="stat-val">{{ scores.macro_f1 }}</span></div>
+            <div class="stat-row"><span>Multi-Class ROC-AUC (OvR)</span><span class="stat-val">{{ scores.roc_auc_ovr }}</span></div>
+            <div class="stat-row"><span>FP32 Inference Latency</span><span class="stat-val">{{ scores.fp32_inference_ms_per_image }} ms</span></div>
+            <div class="stat-row"><span>INT8 Quantized Latency</span><span class="stat-val">{{ scores.int8_quantized_inference_ms }} ms</span></div>
+            <div class="stat-row"><span>Model Size (FP32 → INT8)</span><span class="stat-val">{{ scores.fp32_model_size_mb }} MB → {{ scores.int8_model_size_mb }} MB</span></div>
+            {% else %}
+            <p style="color:var(--muted); font-size:13px;">Run `dvc repro` or `python main.py` to generate evaluation metrics.</p>
+            {% endif %}
+            <div style="margin-top:16px; font-size:12px; color:var(--muted);">
+                <strong>Endpoints:</strong> <a href="/docs" style="color:var(--accent);">/docs</a> ·
+                <a href="/health" style="color:var(--accent);">/health</a> ·
+                <a href="/metrics" style="color:var(--accent);">/metrics</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function runInference() {
+    const fileInput = document.getElementById('imageInput');
+    if (!fileInput.files.length) { alert('Please select an image file first.'); return; }
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    const resp = await fetch('/predict-upload', { method: 'POST', body: formData });
+    const data = await resp.json();
+    document.getElementById('resultBox').style.display = 'block';
+    document.getElementById('predClass').innerText = data.predicted_class;
+    document.getElementById('predConf').innerText = `Confidence: ${data.confidence_percent}% · Latency: ${data.inference_latency_ms} ms`;
+    document.getElementById('predGuidance').innerText = data.clinical_guidance;
+}
+</script>
+</body>
+</html>

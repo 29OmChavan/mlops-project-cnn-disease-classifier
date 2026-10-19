@@ -1,0 +1,4 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/29omchavan/mlops-project-2-cnn-disease-classifier.dvc

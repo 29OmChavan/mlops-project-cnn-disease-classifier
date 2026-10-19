@@ -1,0 +1,142 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python -m src.cnn_classifier.pipeline.stage_01_data_ingestion
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: a3a10a0c862c0b6545995623599f4d1e
+      size: 1100
+    - path: src/cnn_classifier/components/data_ingestion.py
+      hash: md5
+      md5: 070a368010cee2625a76c62174dd537e
+      size: 7335
+    - path: src/cnn_classifier/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: 1f97266b1a8b70710d2898c70be4b5c2
+      size: 984
+    outs:
+    - path: artifacts/data_ingestion/dataset
+      hash: md5
+      md5: fbf284d937b1b5b5290ac7c07599fa99.dir
+      size: 2744199
+      nfiles: 320
+  prepare_base_model:
+    cmd: python -m src.cnn_classifier.pipeline.stage_02_prepare_base_model
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: a3a10a0c862c0b6545995623599f4d1e
+      size: 1100
+    - path: src/cnn_classifier/components/prepare_base_model.py
+      hash: md5
+      md5: 2104dcf1060bd713052072f43c92f14d
+      size: 6488
+    - path: src/cnn_classifier/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: 30ffe7ed58c05c23998c4cd655dedeba
+      size: 1087
+    params:
+      params.yaml:
+        CLASSES: 4
+        DROPOUT_RATE: 0.25
+        FREEZE_ALL: false
+        FREEZE_TILL: 4
+        IMAGE_SIZE:
+        - 64
+        - 64
+        - 3
+        INCLUDE_TOP: false
+        LEARNING_RATE: 0.001
+        WEIGHTS: DEFAULT
+    outs:
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 0f3a5e4a69462d12a47cbc98d767e0d2.dir
+      size: 90101674
+      nfiles: 2
+  training:
+    cmd: python -m src.cnn_classifier.pipeline.stage_03_model_training
+    deps:
+    - path: artifacts/data_ingestion/dataset
+      hash: md5
+      md5: fbf284d937b1b5b5290ac7c07599fa99.dir
+      size: 2744199
+      nfiles: 320
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 0f3a5e4a69462d12a47cbc98d767e0d2.dir
+      size: 90101674
+      nfiles: 2
+    - path: config/config.yaml
+      hash: md5
+      md5: a3a10a0c862c0b6545995623599f4d1e
+      size: 1100
+    - path: src/cnn_classifier/components/model_training.py
+      hash: md5
+      md5: d038482752b242f7a1d537c35a60468c
+      size: 10488
+    - path: src/cnn_classifier/pipeline/stage_03_model_training.py
+      hash: md5
+      md5: 54d99f228c18bb188ea5f1a8b85c9911
+      size: 928
+    params:
+      params.yaml:
+        AUGMENTATION: true
+        BATCH_SIZE: 16
+        EARLY_STOPPING_PATIENCE: 4
+        EPOCHS: 10
+        IMAGE_SIZE:
+        - 64
+        - 64
+        - 3
+        LEARNING_RATE: 0.001
+    outs:
+    - path: artifacts/training/model.pt
+      hash: md5
+      md5: 8fa94ea21ad5a7ce32b631d7d8a9deb4
+      size: 45043267
+    - path: artifacts/training/model_quantized.pt
+      hash: md5
+      md5: 616ba1e1f6538ea4aa8859c95c1592dc
+      size: 44854575
+    - path: artifacts/training/training_history.json
+      hash: md5
+      md5: 87472d62ae0ce6c1d71d58c0b43ca7e9
+      size: 1353
+  evaluation:
+    cmd: python -m src.cnn_classifier.pipeline.stage_04_model_evaluation
+    deps:
+    - path: artifacts/data_ingestion/dataset
+      hash: md5
+      md5: fbf284d937b1b5b5290ac7c07599fa99.dir
+      size: 2744199
+      nfiles: 320
+    - path: artifacts/training/model.pt
+      hash: md5
+      md5: 8fa94ea21ad5a7ce32b631d7d8a9deb4
+      size: 45043267
+    - path: config/config.yaml
+      hash: md5
+      md5: a3a10a0c862c0b6545995623599f4d1e
+      size: 1100
+    - path: src/cnn_classifier/components/model_evaluation.py
+      hash: md5
+      md5: f010a8276018a0a7d5cd55043ac2f858
+      size: 8052
+    - path: src/cnn_classifier/pipeline/stage_04_model_evaluation.py
+      hash: md5
+      md5: cbbb03eb8583bcd3e6219bba5cc083dd
+      size: 991
+    params:
+      params.yaml:
+        BATCH_SIZE: 16
+        IMAGE_SIZE:
+        - 64
+        - 64
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: 9823cba559f280e64283435a46ff1f40
+      size: 1313

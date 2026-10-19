@@ -1,0 +1,25 @@
+{
+    "classes": {
+        "Coccidiosis": {
+            "train_count": 60,
+            "val_count": 20
+        },
+        "Healthy": {
+            "train_count": 60,
+            "val_count": 20
+        },
+        "Newcastle_Disease": {
+            "train_count": 60,
+            "val_count": 20
+        },
+        "Salmonella": {
+            "train_count": 60,
+            "val_count": 20
+        }
+    },
+    "image_size": [
+        64,
+        64,
+        3
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "loss": 0.0,
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "roc_auc_ovr": 1.0,
+    "fp32_inference_ms_per_image": 3.864,
+    "int8_quantized_inference_ms": 8.971,
+    "fp32_model_size_mb": 42.96,
+    "int8_model_size_mb": 42.78,
+    "per_class_metrics": {
+        "Coccidiosis": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+        },
+        "Healthy": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+        },
+        "Newcastle_Disease": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+        },
+        "Salmonella": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1_score": 1.0
+        }
+    },
+    "confusion_matrix": [
+        [
+            20,
+            0,
+            0,
+            0
+        ],
+        [
+            0,
+            20,
+            0,
+            0
+        ],
+        [
+            0,
+            0,
+            20,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            20
+        ]
+    ],
+    "classes": [
+        "Coccidiosis",
+        "Healthy",
+        "Newcastle_Disease",
+        "Salmonella"
+    ]
+}

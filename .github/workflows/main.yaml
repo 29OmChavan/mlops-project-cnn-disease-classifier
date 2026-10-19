@@ -1,0 +1,95 @@
+name: Deep Learning DVC & Multi-Cloud (AWS + Azure) CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 1: Continuous Integration (Flake8 + DVC Pipeline + Pytest)
+  # ─────────────────────────────────────────────────────────────────
+  Continuous-Integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint with Flake8
+        run: |
+          flake8 src tests app.py main.py --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Execute 4-Stage DVC Pipeline & Pytest Suite
+        env:
+          DISABLE_REMOTE_MLFLOW: "1"
+        run: |
+          python main.py
+          pytest tests/ -v
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 2: Continuous Delivery — Push Container to Docker Hub
+  # ─────────────────────────────────────────────────────────────────
+  Continuous-Delivery-DockerHub:
+    needs: Continuous-Integration
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build & Push Image to Docker Hub
+        if: env.DOCKER_PAT != ''
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
+        run: |
+          echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker build -t $DOCKER_USERNAME/mlops-project-2-cnn-disease-classifier:latest .
+          docker push $DOCKER_USERNAME/mlops-project-2-cnn-disease-classifier:latest
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 3: AWS Cloud Deployment (ECR + EC2 Self-Hosted Runner)
+  # ─────────────────────────────────────────────────────────────────
+  Deploy-AWS-Cloud:
+    needs: Continuous-Delivery-DockerHub
+    if: false # Set to true when AWS EC2 self-hosted runner is active
+    runs-on: self-hosted
+    steps:
+      - name: Pull & Run CNN Container on AWS EC2
+        run: |
+          docker pull 29omchavan/mlops-project-2-cnn-disease-classifier:latest
+          docker stop cnn-disease-classifier || true
+          docker rm cnn-disease-classifier || true
+          docker run -d -p 8080:8080 --name cnn-disease-classifier 29omchavan/mlops-project-2-cnn-disease-classifier:latest
+
+  # ─────────────────────────────────────────────────────────────────
+  # JOB 4: Azure Web App for Containers Deployment (ACR + Azure Web App)
+  # ─────────────────────────────────────────────────────────────────
+  Deploy-Azure-WebApp:
+    needs: Continuous-Delivery-DockerHub
+    if: false # Set to true when AZURE_CREDENTIALS secret is configured
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Container to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: cnn-disease-classifier-app
+          images: index.docker.io/29omchavan/mlops-project-2-cnn-disease-classifier:latest
