@@ -6,7 +6,6 @@ Creates/downloads a 4-class Poultry Disease image classification dataset
 """
 import os
 import sys
-from pathlib import Path
 from typing import Dict, Any
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter

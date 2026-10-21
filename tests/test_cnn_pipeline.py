@@ -106,4 +106,39 @@ def test_prediction_pipeline_and_fastapi_endpoints():
             "/predict-upload", files={"file": ("sample_coccidiosis.png", f, "image/png")}
         )
     assert up_resp.status_code == 200
-    assert up_resp.json()["predicted_class"] == "Coccidiosis"
+    up_data = up_resp.json()
+    assert up_data["predicted_class"] == "Coccidiosis"
+    assert "gradcam_overlay_b64" in up_data
+    assert "uncertainty" in up_data
+    assert "morphology" in up_data
+
+
+def test_multi_page_routes_and_12_cv_features():
+    for route in ["/", "/intro", "/studio", "/batch-triage", "/from-scratch-lab", "/dvc-metrics"]:
+        resp = client.get(route)
+        assert resp.status_code == 200
+
+    # Browser HTML health & metrics content negotiation
+    r_h = client.get("/health", headers={"Accept": "text/html"})
+    assert r_h.status_code == 200
+    assert "Diagnostic Audit Trail" in r_h.text
+
+    r_m = client.get("/metrics", headers={"Accept": "text/html"})
+    assert r_m.status_code == 200
+    assert "DVC Reproducible Pipeline" in r_m.text
+
+    # Test interactive 2D Convolution & Micrograd Lab POST
+    r_lab = client.post(
+        "/from-scratch-lab",
+        data={
+            "sample_class": "Coccidiosis",
+            "kernel_name": "laplacian_lesion_detector",
+            "x1": "1.5",
+            "x2": "-0.8",
+            "w1": "0.6",
+            "w2": "-1.1",
+            "b": "0.2",
+        },
+    )
+    assert r_lab.status_code == 200
+    assert "laplacian_lesion_detector" in r_lab.text

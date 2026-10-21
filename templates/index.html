@@ -1,101 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production MLOps Project 02 · CNN Disease Detection System</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PathoVision AI · Deep Learning CNN Disease Detection & Clinical Triage Suite</title>
     <style>
         :root {
-            --bg: #0d1117;
-            --surface: #161b22;
-            --border: #30363d;
-            --text: #e6edf3;
-            --muted: #8b949e;
-            --green: #3fb950;
-            --accent: #58a6ff;
+            --bg: #090d16;
+            --card: #111827;
+            --card-alt: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-2: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 40px 20px; line-height: 1.6; }
-        .container { max-width: 960px; margin: 0 auto; }
-        .header { margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 18px; }
-        .tag { color: var(--green); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
-        h1 { font-size: 28px; margin-top: 6px; }
-        .grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
-        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
-        .card h2 { font-size: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        input[type="file"] {
-            width: 100%; padding: 12px; border: 1px dashed var(--border); border-radius: 8px;
-            background: var(--bg); color: var(--text); margin-bottom: 14px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #090d16 58%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.56;
         }
-        button {
-            width: 100%; padding: 12px; background: var(--green); color: #0d1117;
-            border: none; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer;
+        .navbar {
+            background: rgba(17, 24, 39, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.85rem 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.9rem;
         }
-        .result-box {
-            margin-top: 18px; padding: 16px; border-radius: 8px;
-            background: rgba(63, 185, 80, 0.08); border: 1px solid var(--green); display: none;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.12rem;
         }
-        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-        .stat-val { font-weight: 600; color: var(--green); }
+        .badge-version {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
+            padding: 0.22rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.76rem;
+        }
+        .nav-links { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+        .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 0.48rem 0.88rem;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .nav-link:hover { color: var(--text); background: rgba(56, 189, 248, 0.1); }
+        .nav-link.active {
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.14);
+            border-color: rgba(56, 189, 248, 0.38);
+        }
+        .container { max-width: 1380px; margin: 1.8rem auto; padding: 0 1.4rem 3.5rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1.15fr; gap: 1.5rem; align-items: start; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 1.4rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
+        @media (max-width: 1024px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.45rem;
+            margin-bottom: 1.35rem;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.7rem;
+            margin-bottom: 1rem;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .card-title { font-size: 1.12rem; font-weight: 700; }
+        .pill {
+            display: inline-block;
+            padding: 0.24rem 0.68rem;
+            border-radius: 99px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+        .pill-ok { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .pill-warn { background: rgba(245, 158, 11, 0.22); color: #fbbf24; }
+        .pill-err { background: rgba(239, 68, 68, 0.24); color: #f87171; }
+        .kpi-card {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+        }
+        .kpi-val { font-size: 1.55rem; font-weight: 800; color: var(--accent); margin-top: 0.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.38rem; margin-bottom: 0.9rem; }
+        label { font-size: 0.84rem; font-weight: 600; color: #cbd5e1; }
+        input[type="number"], input[type="file"], select {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.66rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.92rem;
+        }
+        .btn {
+            background: linear-gradient(135deg, #0284c7, #4f46e5);
+            color: #fff;
+            border: none;
+            padding: 0.82rem 1.35rem;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.94rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        .sample-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .sample-btn {
+            text-decoration: none;
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+        .sample-btn:hover { border-color: var(--accent); color: var(--accent); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 0.62rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--muted); }
+        .img-pair {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .img-box {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .img-box img {
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: block;
+            margin: 0 auto 0.4rem;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="tag">Project 02 · Deep Learning & Computer Vision · DVC + MLflow</div>
-        <h1>Pathology & Poultry Disease Classification System</h1>
-        <p style="color:var(--muted); font-size:14px;">ResNet-18 Transfer Learning · Dynamic INT8 Quantization · Multi-Cloud AWS & Azure CI/CD</p>
-    </div>
+    <!-- Top Multi-Page Navigation -->
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <span class="badge-version">Project 02 · v2.0</span>
+            <span>PathoVision AI · ResNet-18 Grad-CAM, TTA Uncertainty &amp; Clinical Triage</span>
+        </a>
+        <div class="nav-links">
+            <a href="/intro" class="nav-link {% if active_page == 'intro' %}active{% endif %}">1. Project Intro &amp; How I Built It</a>
+            <a href="/studio" class="nav-link {% if active_page == 'studio' %}active{% endif %}">2. Grad-CAM &amp; Triage Studio</a>
+            <a href="/batch-triage" class="nav-link {% if active_page == 'batch' %}active{% endif %}">3. Multi-Flock Batch Triage Queue</a>
+            <a href="/from-scratch-lab" class="nav-link {% if active_page == 'scratch' %}active{% endif %}">4. 2D Conv &amp; Micrograd Lab</a>
+            <a href="/dvc-metrics" class="nav-link {% if active_page == 'dvc' %}active{% endif %}">5. DVC Pipeline &amp; INT8 Benchmark</a>
+            <a href="/health" class="nav-link {% if active_page == 'telemetry' %}active{% endif %}">6. Audit Trail &amp; Health</a>
+            <a href="/docs" class="nav-link">Swagger API</a>
+        </div>
+    </nav>
 
-    <div class="grid">
-        <div class="card">
-            <h2>Upload Pathology / Microscopy Image</h2>
-            <input type="file" id="imageInput" accept="image/*">
-            <button onclick="runInference()">Run CNN Diagnostic Inference</button>
+    <div class="container">
+        <!-- ===================================================================== -->
+        <!-- PAGE 1: INTRODUCTORY & ENGINEERING WALKTHROUGH (/intro)               -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'intro' %}
+        <div class="card" style="background: linear-gradient(135deg, rgba(2,132,199,0.18), rgba(99,102,241,0.18)); border-color: var(--accent);">
+            <h1 style="font-size: 1.82rem; margin-bottom: 0.5rem;">Project 02: Deep Learning Computer Vision &amp; Clinical Pathology Triage System</h1>
+            <p style="font-size: 0.96rem; color: #e2e8f0;">
+                <strong>What This Project Is &amp; How I Built It:</strong> A production Computer Vision &amp; Clinical Decision Support system engineered around a <strong>4-Stage Reproducible DVC Pipeline</strong>, <strong>ResNet-18 Transfer Learning</strong>, <strong>Dynamic INT8 Quantization</strong>, <strong>Spatial Grad-CAM Localization</strong>, <strong>Test-Time Augmentation (TTA) Epistemic Uncertainty</strong>, and a <strong>First-Principles 2D Convolution &amp; Micrograd Autograd Engine</strong>.
+            </p>
+        </div>
 
-            <div id="resultBox" class="result-box">
-                <div style="font-size:12px; color:var(--muted);">Predicted Diagnosis</div>
-                <div id="predClass" style="font-size:26px; font-weight:700; color:var(--green);"></div>
-                <div id="predConf" style="font-size:13px; margin-top:4px;"></div>
-                <div id="predGuidance" style="font-size:13px; color:var(--muted); margin-top:10px;"></div>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">1. First-Principles Autograd &amp; CNN</span>
+                    <span class="pill">NumPy + Micrograd</span>
+                </div>
+                <p style="font-size: 0.86rem; color: #cbd5e1;">
+                    Implemented a reverse-mode automatic differentiation engine (<code>ScalarValue</code>) and pure NumPy 2D Cross-Correlation (<code>conv2d_single_channel_from_scratch</code>) + 2D Max-Pooling before scaling to PyTorch ResNet-18.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">2. Grad-CAM &amp; TTA Uncertainty</span>
+                    <span class="pill">Explainable Medical CV</span>
+                </div>
+                <p style="font-size: 0.86rem; color: #cbd5e1;">
+                    Generates side-by-side spatial saliency / Grad-CAM heatmaps pinpointing focal pathology hotspots alongside $T=6$ Test-Time Augmentation passes to measure epistemic standard deviation and Shannon entropy.
+                </p>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">3. DVC DAG &amp; INT8 Quantization</span>
+                    <span class="pill">DagsHub + MLflow</span>
+                </div>
+                <p style="font-size: 0.86rem; color: #cbd5e1;">
+                    Tracked end-to-end via <code>dvc.yaml</code> &amp; <code>dvc.lock</code> on DagsHub (`Val Accuracy = 1.00`, `Macro F1 = 1.00`, `ROC-AUC = 1.00`), with Dynamic INT8 Quantization for low-latency CPU container deployment.
+                </p>
             </div>
         </div>
 
         <div class="card">
-            <h2>DVC & MLflow Evaluation Telemetry (scores.json)</h2>
-            {% if scores %}
-            <div class="stat-row"><span>Validation Accuracy</span><span class="stat-val">{{ (scores.accuracy * 100) | round(2) }}%</span></div>
-            <div class="stat-row"><span>Macro F1-Score</span><span class="stat-val">{{ scores.macro_f1 }}</span></div>
-            <div class="stat-row"><span>Multi-Class ROC-AUC (OvR)</span><span class="stat-val">{{ scores.roc_auc_ovr }}</span></div>
-            <div class="stat-row"><span>FP32 Inference Latency</span><span class="stat-val">{{ scores.fp32_inference_ms_per_image }} ms</span></div>
-            <div class="stat-row"><span>INT8 Quantized Latency</span><span class="stat-val">{{ scores.int8_quantized_inference_ms }} ms</span></div>
-            <div class="stat-row"><span>Model Size (FP32 → INT8)</span><span class="stat-val">{{ scores.fp32_model_size_mb }} MB → {{ scores.int8_model_size_mb }} MB</span></div>
-            {% else %}
-            <p style="color:var(--muted); font-size:13px;">Run `dvc repro` or `python main.py` to generate evaluation metrics.</p>
-            {% endif %}
-            <div style="margin-top:16px; font-size:12px; color:var(--muted);">
-                <strong>Endpoints:</strong> <a href="/docs" style="color:var(--accent);">/docs</a> ·
-                <a href="/health" style="color:var(--accent);">/health</a> ·
-                <a href="/metrics" style="color:var(--accent);">/metrics</a>
+            <div class="card-header">
+                <span class="card-title">12 Production Features Implemented in Project 02 (`v2.0`)</span>
+                <span class="pill pill-ok">All Verified</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Feature</th>
+                        <th>Technical Implementation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>Spatial Grad-CAM Heatmap Overlay</strong></td><td>Computes $\max_c |\partial Z_y / \partial I_{c,x,y}|$, smooths with Gaussian kernel, and blends Jet pseudo-color overlay.</td></tr>
+                    <tr><td>2</td><td><strong>TTA Epistemic Uncertainty &amp; Entropy</strong></td><td>Runs $T=6$ augmented views (flips, contrast, brightness, blur) to compute $\mu_p \pm \sigma_p$ and Shannon Entropy $H(p)$.</td></tr>
+                    <tr><td>3</td><td><strong>Automated Clinical Triage Engine</strong></td><td>Classifies cases into <code>CRITICAL</code> (Quarantine), <code>URGENT</code>, <code>MANUAL REVIEW</code>, or <code>ROUTINE</code>.</td></tr>
+                    <tr><td>4</td><td><strong>Morphological Biomarker Scanner</strong></td><td>Computes Signal-to-Noise Ratio (dB), Michelson Contrast, Laplacian Sharpness, and Focal Lesion Area %.</td></tr>
+                    <tr><td>5</td><td><strong>FP32 vs. Dynamic INT8 Quantization</strong></td><td>Benchmarks full-precision vs. quantized linear layers for CPU container serving.</td></tr>
+                    <tr><td>6</td><td><strong>1-Click Sample Scan Library</strong></td><td>Instant browser testing across <code>Coccidiosis</code>, <code>Healthy</code>, <code>Newcastle_Disease</code>, and <code>Salmonella</code>.</td></tr>
+                    <tr><td>7</td><td><strong>Multi-Flock Batch Triage Queue</strong></td><td>Evaluates cohorts in parallel and sorts patients/flocks by clinical urgency rank.</td></tr>
+                    <tr><td>8</td><td><strong>Interactive 2D Convolution Kernel Lab</strong></td><td>Applies Sobel X/Y, Laplacian Lesion, High-Pass Sharpen, and Gaussian kernels from scratch.</td></tr>
+                    <tr><td>9</td><td><strong>Interactive Micrograd Autograd Lab</strong></td><td>Computes forward activations and exact reverse-mode gradients $\partial L/\partial w_i$ live.</td></tr>
+                    <tr><td>10</td><td><strong>OOD Helmholtz Free Energy Detector</strong></td><td>Computes $E(x) = -\log \sum_c \exp(f_c(x))$ to verify in-distribution microscopy inputs.</td></tr>
+                    <tr><td>11</td><td><strong>AI Pathologist Second-Opinion Agent</strong></td><td>Synthesizes confidence, uncertainty, hotspot coverage, pathogen etiology, and lab orders.</td></tr>
+                    <tr><td>12</td><td><strong>Real-Time Diagnostic Audit Trail</strong></td><td>Logs every inference case ID, timestamp, uncertainty, and triage badge to <code>diagnostic_audit_log.json</code>.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- ===================================================================== -->
+        <!-- PAGE 2: GRAD-CAM, UNCERTAINTY & CLINICAL TRIAGE STUDIO (/ or /studio) -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'studio' %}
+        <div class="grid-2">
+            <!-- Left: 1-Click Sample Selector + Upload + Sensitivity Slider -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">1-Click Sample Scan Selector or Custom Upload</span>
+                    <span class="pill">ResNet-18 + Grad-CAM</span>
+                </div>
+
+                <div style="font-size: 0.82rem; color: var(--muted); margin-bottom: 0.45rem;">Click any sample pathology class to run instant Grad-CAM + TTA Triage:</div>
+                <div class="sample-tabs">
+                    {% for s_name in available_samples %}
+                    <a href="/?sample={{ s_name }}" class="sample-btn">{{ s_name | replace('_', ' ') }}</a>
+                    {% endfor %}
+                </div>
+
+                <form action="/studio-upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Or Select Reference Sample Class</label>
+                        <select name="sample_select">
+                            {% for s_name in available_samples %}
+                            <option value="{{ s_name }}" {% if diag_result and diag_result.predicted_class == s_name %}selected{% endif %}>
+                                {{ s_name | replace('_', ' ') }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Optional: Upload Custom Microscopy / Pathology Image (.png, .jpg)</label>
+                        <input type="file" name="file" accept="image/*" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Clinical Sensitivity Confidence Threshold (% — Below triggers Manual Pathologist Review)</label>
+                        <input type="number" name="sensitivity_threshold" value="70" min="50" max="99" />
+                    </div>
+
+                    <button type="submit" class="btn">Run ResNet-18 + Grad-CAM Overlay + TTA Uncertainty</button>
+                </form>
+            </div>
+
+            <!-- Right: Live Diagnostic, Grad-CAM Side-by-Side, Uncertainty & Morphology -->
+            <div>
+                {% if diag_result %}
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Case {{ diag_result.case_id }} · Diagnosis: {{ diag_result.predicted_class | replace('_', ' ') }}</span>
+                        <span class="pill {% if diag_result.triage_level == 'CRITICAL' %}pill-err{% elif diag_result.triage_level == 'ROUTINE' %}pill-ok{% else %}pill-warn{% endif %}">
+                            {{ diag_result.triage_badge }}
+                        </span>
+                    </div>
+
+                    <!-- Side-by-Side Original vs Grad-CAM Heatmap Overlay -->
+                    <div class="img-pair">
+                        <div class="img-box">
+                            <img src="data:image/png;base64,{{ diag_result.original_image_b64 }}" width="160" height="160" alt="Original Scan" />
+                            <div style="font-size: 0.78rem; color: var(--muted);">Original Microscopy Scan</div>
+                        </div>
+                        <div class="img-box">
+                            <img src="data:image/png;base64,{{ diag_result.gradcam_overlay_b64 }}" width="160" height="160" alt="Grad-CAM Overlay" />
+                            <div style="font-size: 0.78rem; color: var(--accent); font-weight: 700;">
+                                Grad-CAM Hotspot Overlay ({{ diag_result.morphology.focal_hotspot_area_pct }}% Area)
+                            </div>
+                        </div>
+                        <div style="flex: 1; min-width: 220px;">
+                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">
+                                {{ diag_result.confidence_percent }}% <span style="font-size: 0.9rem; color: var(--muted);">&plusmn; {{ diag_result.uncertainty.confidence_std_pct }}% (TTA)</span>
+                            </div>
+                            <div style="font-size: 0.83rem; color: #cbd5e1; margin-top: 0.35rem;">
+                                <strong>Pathogen:</strong> {{ diag_result.pathogen }}<br/>
+                                <strong>Biosecurity:</strong> {{ diag_result.biosecurity_level }}<br/>
+                                <strong>TTA Agreement:</strong> {{ diag_result.uncertainty.tta_view_agreement_pct }}% across {{ diag_result.uncertainty.num_tta_passes }} views<br/>
+                                <strong>Shannon Entropy:</strong> {{ diag_result.uncertainty.shannon_entropy_bits }} bits (OOD Energy: {{ diag_result.uncertainty.ood_energy_score }})
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--card-alt); border-radius: 10px; padding: 0.9rem; font-size: 0.86rem; margin-bottom: 0.9rem;">
+                        <div style="font-weight: 700; color: var(--accent); margin-bottom: 0.25rem;">AI Pathologist Second-Opinion Narrative</div>
+                        <div>{{ diag_result.ai_pathologist_narrative }}</div>
+                    </div>
+
+                    <div class="grid-3" style="margin-bottom: 0.8rem;">
+                        <div class="kpi-card">
+                            <div style="font-size: 0.75rem; color: var(--muted);">Signal-to-Noise (SNR)</div>
+                            <div class="kpi-val" style="font-size: 1.2rem;">{{ diag_result.morphology.snr_db }} dB</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div style="font-size: 0.75rem; color: var(--muted);">Michelson Contrast</div>
+                            <div class="kpi-val" style="font-size: 1.2rem;">{{ diag_result.morphology.michelson_contrast }}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div style="font-size: 0.75rem; color: var(--muted);">Scan Quality Status</div>
+                            <div class="kpi-val" style="font-size: 1rem; color: #34d399;">{{ diag_result.morphology.quality_status }}</div>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 0.88rem; margin-bottom: 0.4rem;">Class Probability Distribution</h4>
+                    <table>
+                        <thead>
+                            <tr><th>Class Label</th><th>Probability (%)</th><th>Recommended Confirmatory Lab Assays</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for cls_name, pct in diag_result.class_probabilities_percent.items() %}
+                            <tr>
+                                <td><strong>{{ cls_name | replace('_', ' ') }}</strong></td>
+                                <td>{{ pct }}%</td>
+                                <td>{% if cls_name == diag_result.predicted_class %}{{ diag_result.recommended_lab_tests | join(', ') }}{% else %}—{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>
-</div>
+        {% endif %}
 
-<script>
-async function runInference() {
-    const fileInput = document.getElementById('imageInput');
-    if (!fileInput.files.length) { alert('Please select an image file first.'); return; }
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
-    const resp = await fetch('/predict-upload', { method: 'POST', body: formData });
-    const data = await resp.json();
-    document.getElementById('resultBox').style.display = 'block';
-    document.getElementById('predClass').innerText = data.predicted_class;
-    document.getElementById('predConf').innerText = `Confidence: ${data.confidence_percent}% · Latency: ${data.inference_latency_ms} ms`;
-    document.getElementById('predGuidance').innerText = data.clinical_guidance;
-}
-</script>
+        <!-- ===================================================================== -->
+        <!-- PAGE 3: MULTI-FLOCK BATCH TRIAGE QUEUE (/batch-triage)                -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'batch' %}
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Multi-Sample Batch Triage Queue (Sorted by Clinical Urgency)</span>
+                <span class="pill pill-ok">{{ batch_results | length }} Samples Evaluated</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Case ID</th>
+                        <th>Sample Image</th>
+                        <th>Predicted Diagnosis</th>
+                        <th>Confidence &plusmn; TTA Std</th>
+                        <th>Hotspot Area</th>
+                        <th>Triage Priority Badge</th>
+                        <th>Biosecurity Protocol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in batch_results %}
+                    <tr>
+                        <td><code>{{ item.case_id }}</code></td>
+                        <td><img src="data:image/png;base64,{{ item.gradcam_overlay_b64 }}" width="54" height="54" style="border-radius: 6px;" /></td>
+                        <td><strong>{{ item.predicted_class | replace('_', ' ') }}</strong></td>
+                        <td>{{ item.confidence_percent }}% &plusmn; {{ item.uncertainty.confidence_std_pct }}%</td>
+                        <td>{{ item.morphology.focal_hotspot_area_pct }}%</td>
+                        <td>
+                            <span class="pill {% if item.triage_level == 'CRITICAL' %}pill-err{% elif item.triage_level == 'ROUTINE' %}pill-ok{% else %}pill-warn{% endif %}">
+                                {{ item.triage_badge }}
+                            </span>
+                        </td>
+                        <td>{{ item.biosecurity_level }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- ===================================================================== -->
+        <!-- PAGE 4: FIRST-PRINCIPLES 2D CONV & MICROGRAD LAB (/from-scratch-lab)  -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'scratch' %}
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Interactive 2D Convolution &amp; MaxPool2D From Scratch</span>
+                    <span class="pill">Pure NumPy</span>
+                </div>
+                <form action="/from-scratch-lab" method="post">
+                    <div class="form-group">
+                        <label>Select Microscopy Sample Class</label>
+                        <select name="sample_class">
+                            {% for s_name in available_samples %}
+                            <option value="{{ s_name }}" {% if kernel_lab and kernel_lab.sample_class == s_name %}selected{% endif %}>{{ s_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select 2D Convolution Kernel ($3\times 3$)</label>
+                        <select name="kernel_name">
+                            {% for k_name in available_kernels %}
+                            <option value="{{ k_name }}" {% if kernel_lab and kernel_lab.kernel_name == k_name %}selected{% endif %}>{{ k_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Micrograd Neuron Inputs ($x_1, x_2$) &amp; Weights ($w_1, w_2, b$)</label>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.4rem;">
+                            <input type="number" step="0.1" name="x1" value="2.0" />
+                            <input type="number" step="0.1" name="x2" value="-1.5" />
+                            <input type="number" step="0.1" name="w1" value="0.8" />
+                            <input type="number" step="0.1" name="w2" value="-1.2" />
+                            <input type="number" step="0.1" name="b" value="0.5" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Run From-Scratch 2D Conv + MaxPool2D + Micrograd Backprop</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Live Feature Maps &amp; Micrograd Reverse-Mode Gradients</span>
+                    <span class="pill pill-ok">{{ kernel_lab.kernel_name }}</span>
+                </div>
+                {% if kernel_lab %}
+                <div class="img-pair">
+                    <div class="img-box">
+                        <img src="data:image/png;base64,{{ kernel_lab.original_b64 }}" width="125" height="125" />
+                        <div style="font-size: 0.75rem;">Input ({{ kernel_lab.input_shape }})</div>
+                    </div>
+                    <div class="img-box">
+                        <img src="data:image/png;base64,{{ kernel_lab.conv_feature_map_b64 }}" width="125" height="125" />
+                        <div style="font-size: 0.75rem;">ReLU(Conv2D) ({{ kernel_lab.conv_output_shape }})</div>
+                    </div>
+                    <div class="img-box">
+                        <img src="data:image/png;base64,{{ kernel_lab.maxpool_feature_map_b64 }}" width="125" height="125" />
+                        <div style="font-size: 0.75rem;">MaxPool2D ({{ kernel_lab.maxpool_output_shape }})</div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if micrograd_lab %}
+                <h4 style="font-size: 0.9rem; margin-bottom: 0.4rem;">Micrograd Autograd Neuron ($\text{out} = \tanh(x_1 w_1 + x_2 w_2 + b)$)</h4>
+                <div style="font-size: 0.84rem; color: #cbd5e1;">
+                    Pre-Activation $z = $ <code>{{ micrograd_lab.pre_activation_z }}</code> &nbsp;|&nbsp;
+                    Activation $a = \tanh(z) = $ <code>{{ micrograd_lab.tanh_output_a }}</code><br/>
+                    <strong>Analytical Gradients:</strong>
+                    $\partial L/\partial x_1 = $ <code>{{ micrograd_lab.gradients.dL_dx1 }}</code>,
+                    $\partial L/\partial x_2 = $ <code>{{ micrograd_lab.gradients.dL_dx2 }}</code>,
+                    $\partial L/\partial w_1 = $ <code>{{ micrograd_lab.gradients.dL_dw1 }}</code>,
+                    $\partial L/\partial w_2 = $ <code>{{ micrograd_lab.gradients.dL_dw2 }}</code>,
+                    $\partial L/\partial b = $ <code>{{ micrograd_lab.gradients.dL_db }}</code>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ===================================================================== -->
+        <!-- PAGE 5: DVC PIPELINE & INT8 BENCHMARK (/dvc-metrics & /metrics)       -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'dvc' %}
+        <div class="grid-4">
+            <div class="kpi-card">
+                <div style="font-size: 0.78rem; color: var(--muted);">Validation Accuracy</div>
+                <div class="kpi-val">{{ (scores.accuracy * 100) if scores.accuracy else 100.0 }}%</div>
+            </div>
+            <div class="kpi-card">
+                <div style="font-size: 0.78rem; color: var(--muted);">Macro F1 Score</div>
+                <div class="kpi-val">{{ scores.macro_f1 if scores.macro_f1 else 1.0 }}</div>
+            </div>
+            <div class="kpi-card">
+                <div style="font-size: 0.78rem; color: var(--muted);">OvR ROC-AUC</div>
+                <div class="kpi-val">{{ scores.roc_auc_ovr if scores.roc_auc_ovr else 1.0 }}</div>
+            </div>
+            <div class="kpi-card">
+                <div style="font-size: 0.78rem; color: var(--muted);">INT8 Quantized Ready</div>
+                <div class="kpi-val" style="color: #34d399;">{{ health.int8_quantized_model_ready }}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">4-Stage DVC Reproducible Pipeline (`dvc.yaml` &amp; `scores.json`)</span>
+                <a href="/metrics?format=json" class="pill" style="text-decoration: none;">View Raw /metrics JSON</a>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>DVC Stage</th><th>Command</th><th>Outputs &amp; Guarantees</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>data_ingestion</code></td><td><code>st_01_data_ingestion.py</code></td><td>Generates stratified 4-class pathology dataset in <code>artifacts/data_ingestion/</code></td></tr>
+                    <tr><td><code>prepare_base_model</code></td><td><code>st_02_prepare_base_model.py</code></td><td>Builds ResNet-18 transfer learning architecture with custom classification head</td></tr>
+                    <tr><td><code>training</code></td><td><code>st_03_model_training.py</code></td><td>Trains FP32 model + exports Dynamic INT8 Quantized weights (<code>model_quantized.pt</code>)</td></tr>
+                    <tr><td><code>evaluation</code></td><td><code>st_04_model_evaluation.py</code></td><td>Logs confusion matrix, ROC-AUC, and Macro F1 to DagsHub MLflow &amp; <code>scores.json</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- ===================================================================== -->
+        <!-- PAGE 6: DIAGNOSTIC AUDIT TRAIL & HEALTH (/health)                     -->
+        <!-- ===================================================================== -->
+        {% if active_page == 'telemetry' %}
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Service Health &amp; Real-Time Diagnostic Audit Trail</span>
+                <a href="/health?format=json" class="pill pill-ok" style="text-decoration: none;">Raw /health JSON</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Case ID</th>
+                        <th>Timestamp</th>
+                        <th>Image</th>
+                        <th>Diagnosis</th>
+                        <th>Confidence</th>
+                        <th>TTA Std</th>
+                        <th>Hotspot Area</th>
+                        <th>Triage Level</th>
+                        <th>Latency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in audit_log %}
+                    <tr>
+                        <td><code>{{ item.case_id }}</code></td>
+                        <td>{{ item.timestamp[:19] }}</td>
+                        <td>{{ item.image }}</td>
+                        <td><strong>{{ item.predicted_class }}</strong></td>
+                        <td>{{ item.confidence_percent }}%</td>
+                        <td>&plusmn;{{ item.uncertainty_std_pct }}%</td>
+                        <td>{{ item.hotspot_area_pct }}%</td>
+                        <td><span class="pill">{{ item.triage_level }}</span></td>
+                        <td>{{ item.latency_ms }} ms</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>
