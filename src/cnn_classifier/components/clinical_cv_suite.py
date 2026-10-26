@@ -177,7 +177,7 @@ def conv2d_single_channel_from_scratch(image_2d: np.ndarray, kernel: np.ndarray)
     out = np.zeros((h, w), dtype=np.float32)
     for i in range(h):
         for j in range(w):
-            patch = padded[i : i + kh, j : j + kw]
+            patch = padded[i:i + kh, j:j + kw]
             out[i, j] = float(np.sum(patch * kernel))
     return out
 
@@ -189,7 +189,7 @@ def maxpool2d_from_scratch(feature_map: np.ndarray, pool_size: int = 2) -> np.nd
     out = np.zeros((oh, ow), dtype=np.float32)
     for i in range(oh):
         for j in range(ow):
-            patch = feature_map[i * pool_size : (i + 1) * pool_size, j * pool_size : (j + 1) * pool_size]
+            patch = feature_map[i * pool_size:(i + 1) * pool_size, j * pool_size:(j + 1) * pool_size]
             out[i, j] = float(np.max(patch))
     return out
 
@@ -443,14 +443,14 @@ class ClinicalCVDiagnosticSuite:
 
             latency_ms = round((time.perf_counter() - t0) * 1000.0, 2)
 
-            # AI Pathologist Second-Opinion Narrative
+            # Lab Bench Note
             ai_narrative = (
-                f"[AI Pathologist Second-Opinion] ResNet-18 classified scan '{image_path.name}' as "
-                f"'{pred_label}' ({confidence}% confidence ± {uncertainty['confidence_std_pct']}% TTA std, "
-                f"{uncertainty['tta_view_agreement_pct']}% multi-view agreement). "
-                f"Grad-CAM spatial localization highlights focal activation across "
-                f"{morphology['focal_hotspot_area_pct']}% of the field of view (SNR={morphology['snr_db']} dB). "
-                f"Pathogen: {proto['pathogen']}. Action: {proto['clinical_guidance']}"
+                f"Lab Note ({image_path.name}): Model top call is {pred_label} at {confidence}% "
+                f"(6-view TTA std: +/-{uncertainty['confidence_std_pct']}%, "
+                f"view agreement: {uncertainty['tta_view_agreement_pct']}%). "
+                f"Input-gradient map peaks over {morphology['focal_hotspot_area_pct']}% of the 64x64 crop "
+                f"with SNR {morphology['snr_db']} dB. "
+                f"Suspected agent: {proto['pathogen']}. Recommended next step: {proto['clinical_guidance']}"
             )
 
             record = {

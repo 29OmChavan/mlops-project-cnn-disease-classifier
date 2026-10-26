@@ -34,7 +34,7 @@ def conv2d_from_scratch(
     out = np.zeros((h_out, w_out), dtype=np.float32)
     for i in range(h_out):
         for j in range(w_out):
-            patch = image[i * stride : i * stride + k_h, j * stride : j * stride + k_w]
+            patch = image[i * stride:i * stride + k_h, j * stride:j * stride + k_w]
             out[i, j] = np.sum(patch * kernel)
     return out
 

@@ -114,7 +114,7 @@ def test_prediction_pipeline_and_fastapi_endpoints():
 
 
 def test_multi_page_routes_and_12_cv_features():
-    for route in ["/", "/intro", "/studio", "/batch-triage", "/from-scratch-lab", "/dvc-metrics"]:
+    for route in ["/", "/intro", "/studio", "/batch-triage", "/from-scratch-lab", "/dvc-metrics", "/help", "/docs"]:
         resp = client.get(route)
         assert resp.status_code == 200
 

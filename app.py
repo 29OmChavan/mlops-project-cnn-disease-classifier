@@ -1,12 +1,12 @@
 """
 FastAPI Production Computer Vision & Clinical Triage Portal for Project 02 (v2.0).
 Exposes 6 Dynamic Web Pages + Full REST API:
-- GET  /                  : Page 2 — Interactive Grad-CAM, TTA Uncertainty & Clinical Triage Studio
-- GET  /intro             : Page 1 — "What This Project Is & How I Developed It" Engineering Walkthrough
-- GET  /batch-triage      : Page 3 — Multi-Flock / Multi-Sample Batch Triage Queue & Priority Sorter
-- GET  /from-scratch-lab  : Page 4 — First-Principles 2D Convolution Kernel & Micrograd Autograd Lab
-- GET  /dvc-metrics       : Page 5 — DVC 4-Stage Pipeline DAG, Epoch Curves & INT8 Quantization Benchmark
-- GET  /health            : Page 6 — Health & Telemetry Audit Trail (HTML in browser, JSON for API/TestClient)
+- GET  /                  : Page 2 - Interactive Grad-CAM, TTA Uncertainty & Clinical Triage Studio
+- GET  /intro             : Page 1 - "What This Project Is & How I Developed It" Engineering Walkthrough
+- GET  /batch-triage      : Page 3 - Multi-Flock / Multi-Sample Batch Triage Queue & Priority Sorter
+- GET  /from-scratch-lab  : Page 4 - First-Principles 2D Convolution Kernel & Micrograd Autograd Lab
+- GET  /dvc-metrics       : Page 5 - DVC 4-Stage Pipeline DAG, Epoch Curves & INT8 Quantization Benchmark
+- GET  /health            : Page 6 - Health & Telemetry Audit Trail (HTML in browser, JSON for API/TestClient)
 - GET  /metrics           : DVC scores.json & training history (HTML in browser, JSON for API/TestClient)
 - POST /predict           : Accepts Base64-encoded image JSON (Krish Naik decodeImage pattern) + Grad-CAM & Uncertainty
 - POST /predict-upload    : Accepts Multipart file upload (`UploadFile`)
@@ -28,13 +28,13 @@ from src.cnn_classifier.components.clinical_cv_suite import ClinicalCVDiagnostic
 from main import run_all_stages
 
 app = FastAPI(
-    title="Production MLOps Project 02: Deep Learning CNN Disease Detection & Clinical Triage Suite",
+    title="Poultry Pathology Slide Classifier (ResNet-18 + DVC)",
     description=(
-        "ResNet-18 Transfer Learning Computer Vision system with Grad-CAM Localization, "
-        "Test-Time Augmentation (TTA) Epistemic Uncertainty, Morphological Biomarkers, "
-        "First-Principles 2D Convolution & Micrograd Lab, DVC Pipeline Tracking, and Dynamic INT8 Quantization."
+        "Fecal microscopy classification service using ResNet-18, input-gradient heatmaps, "
+        "6-pass test-time augmentation, and DVC pipeline tracking."
     ),
     version="2.0.0",
+    docs_url="/swagger-raw",
 )
 
 templates = Jinja2Templates(directory="templates")
@@ -178,6 +178,18 @@ async def from_scratch_lab_post(
 @app.get("/dvc-metrics", response_class=HTMLResponse, tags=["UI Pages"])
 async def dvc_metrics_page(request: Request):
     ctx = _build_ui_context(active_page="dvc")
+    return templates.TemplateResponse(request=request, name="index.html", context=ctx)
+
+
+@app.get("/help", response_class=HTMLResponse, tags=["UI Pages"])
+async def help_page(request: Request):
+    ctx = _build_ui_context(active_page="help")
+    return templates.TemplateResponse(request=request, name="index.html", context=ctx)
+
+
+@app.get("/docs", response_class=HTMLResponse, tags=["UI Pages"])
+async def docs_page(request: Request):
+    ctx = _build_ui_context(active_page="docs")
     return templates.TemplateResponse(request=request, name="index.html", context=ctx)
 
 
