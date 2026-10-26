@@ -1,0 +1,42 @@
+[
+  {
+    "flag_id": "FSDL-FLAG-101",
+    "case_id": "CASE-TEST1",
+    "predicted_class": "Coccidiosis",
+    "expected_class": "Salmonella",
+    "clinician_notes": "Check oocyst border",
+    "s3_quarantine_uri": "s3://avian-pathology-active-learning/quarantine/CASE-TEST1.png",
+    "timestamp": "2026-10-26T14:13:01Z",
+    "status": "QUEUED_FOR_DVC_REPRO"
+  },
+  {
+    "flag_id": "FSDL-FLAG-102",
+    "case_id": "CASE-99",
+    "predicted_class": "Coccidiosis",
+    "expected_class": "Healthy",
+    "clinician_notes": "Misclassified mucosal border",
+    "s3_quarantine_uri": "s3://avian-pathology-active-learning/quarantine/CASE-99.png",
+    "timestamp": "2026-10-26T14:13:14Z",
+    "status": "QUEUED_FOR_DVC_REPRO"
+  },
+  {
+    "flag_id": "FSDL-FLAG-103",
+    "case_id": "CASE-TEST1",
+    "predicted_class": "Coccidiosis",
+    "expected_class": "Salmonella",
+    "clinician_notes": "Check oocyst border",
+    "s3_quarantine_uri": "s3://avian-pathology-active-learning/quarantine/CASE-TEST1.png",
+    "timestamp": "2026-10-26T14:15:03Z",
+    "status": "QUEUED_FOR_DVC_REPRO"
+  },
+  {
+    "flag_id": "FSDL-FLAG-104",
+    "case_id": "CASE-99",
+    "predicted_class": "Coccidiosis",
+    "expected_class": "Healthy",
+    "clinician_notes": "Misclassified mucosal border",
+    "s3_quarantine_uri": "s3://avian-pathology-active-learning/quarantine/CASE-99.png",
+    "timestamp": "2026-10-26T14:15:16Z",
+    "status": "QUEUED_FOR_DVC_REPRO"
+  }
+]

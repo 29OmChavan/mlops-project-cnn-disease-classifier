@@ -326,10 +326,16 @@
                         </div>
                         <div style="border:1px solid #2e3c4d; background:#11161d; color:#e2e8f0; padding:10px; font-size:12.5px;">
                             <strong>[FSDL-2021 Active Learning] Flag Incorrect Prediction to S3 Quarantine:</strong>
-                            <div style="display:flex; gap:8px; margin-top:6px; align-items:center;">
+                            <div style="display:flex; gap:8px; margin-top:6px; align-items:center; flex-wrap:wrap;">
                                 <span class="mono">Case: {{ diag_result.case_id }}</span>
-                                <a href="/docs" class="btn btn-secondary" style="padding:4px 10px; font-size:12px;">Flag / Relabel via API</a>
+                                <select id="flag-expected-class" style="width:auto; margin:0; padding:4px 8px; font-size:12px;">
+                                    {% for s in available_samples %}
+                                    <option value="{{ s }}" {% if s != diag_result.predicted_class %}selected{% endif %}>Expected: {{ s }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:12px;" onclick="flagSlideNow('{{ diag_result.case_id }}', '{{ diag_result.predicted_class }}')">Flag &amp; Save to S3 Quarantine</button>
                             </div>
+                            <div id="flag-live-msg" class="mono" style="margin-top:6px; color:#10b981; font-size:11.5px;">{% if flag_notice %}{{ flag_notice }}{% endif %}</div>
                         </div>
                         {% endif %}
                     </div>
@@ -337,14 +343,22 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
                     <div>
-                        <button type="submit" class="btn btn-run" id="btn-submit" style="display:none;">Run Slide Screening &check;</button>
+                        <button type="submit" class="btn btn-run" id="btn-submit">Run Slide Screening &check;</button>
                         <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
                     </div>
                 </div>
             </form>
             <script>
                 const maxSteps = 4;
-                let cur = 1;
+                let cur = {{ initial_step | default(1) }};
+                async function flagSlideNow(caseId, predClass) {
+                    const exp = document.getElementById('flag-expected-class').value;
+                    const msgBox = document.getElementById('flag-live-msg');
+                    msgBox.textContent = 'Quarantining ' + caseId + ' ...';
+                    const r = await fetch('/flag-prediction?case_id=' + encodeURIComponent(caseId) + '&predicted_class=' + encodeURIComponent(predClass) + '&expected_class=' + encodeURIComponent(exp), { method: 'POST' });
+                    const d = await r.json();
+                    msgBox.textContent = 'Quarantined ' + d.flag_id + ' -> ' + d.s3_quarantine_uri;
+                }
             </script>
 
             <!-- ===================================================================== -->
@@ -644,7 +658,7 @@ serialized_aug: artifacts/augmentation_pipeline.json ({{ aug_config.transform.tr
             const sub = document.getElementById('btn-submit');
             if (prev) prev.style.visibility = (n > 1) ? 'visible' : 'hidden';
             if (next) next.style.display = (n < maxSteps) ? 'inline-block' : 'none';
-            if (sub) sub.style.display = (n === 2) ? 'inline-block' : 'none';
+            if (sub) sub.style.display = 'inline-block';
         }
         goStep(cur);
     </script>

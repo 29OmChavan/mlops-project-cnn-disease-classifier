@@ -87,6 +87,7 @@ def _build_ui_context(active_page: str = "studio") -> Dict[str, Any]:
         "aug_config": cv_suite.get_serialized_augmentation_config(),
         "cml_report": cv_suite.get_cml_pr_gate_report(),
         "flag_notice": None,
+        "initial_step": 1,
     }
 
 
@@ -141,6 +142,7 @@ async def studio_upload_form(
         target_path, sensitivity_threshold=float(sensitivity_threshold)
     )
     ctx["audit_log"] = cv_suite.get_audit_log(limit=12)
+    ctx["initial_step"] = 3
     return templates.TemplateResponse(request=request, name="index.html", context=ctx)
 
 
@@ -284,6 +286,7 @@ async def flag_prediction_form(
         f"Flagged {entry['flag_id']} ({case_id}: {predicted_class} -> {expected_class}) "
         f"saved to {entry['s3_quarantine_uri']}."
     )
+    ctx["initial_step"] = 4
     return templates.TemplateResponse(request=request, name="index.html", context=ctx)
 
 
