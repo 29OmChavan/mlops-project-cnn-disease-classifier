@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Poultry Fecal Slide Classifier (ResNet-18 / DVC Lab Bench)</title>
+    <title>Poultry Fecal Slide Classifier (Step-by-Step Lab Modal)</title>
     <style>
-        /* Pre-2022 Scientific Lab Workbench / ReadTheDocs & Jupyter Classic Theme */
+        /* Clean Step-by-Step Modal Wizard Layout (Project 02 - Scientific Lab Bench Theme) */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: #f4f3ef;
+            background-color: #e8e6df;
             color: #22252a;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.55;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         code, pre, .mono {
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
             font-size: 12.5px;
         }
-        /* Classic 2019-2020 Dark Slate Header Bar */
         .top-header {
             background-color: #2980b9;
             border-bottom: 3px solid #1c5980;
@@ -27,884 +29,568 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
         }
-        .top-header .repo-title {
-            font-size: 16px;
+        .repo-title {
+            font-size: 15px;
             font-weight: 700;
             color: #ffffff;
             text-decoration: none;
-            letter-spacing: -0.2px;
         }
-        .top-header .repo-sub {
-            font-size: 12px;
-            color: #d6eaf8;
-            margin-left: 8px;
-            font-weight: 400;
-        }
-        /* Sub-navigation bar like classic ReadTheDocs / Trac / Redmine */
         .tab-bar {
-            background-color: #e9e7e0;
+            background-color: #ffffff;
             border-bottom: 1px solid #c5c2b8;
-            padding: 0 20px;
+            padding: 0 16px;
             display: flex;
+            justify-content: center;
             flex-wrap: wrap;
             gap: 2px;
         }
         .tab-link {
-            display: inline-block;
-            padding: 8px 14px;
+            padding: 10px 13px;
             color: #33373d;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            border-right: 1px solid #d5d2c8;
             border-bottom: 3px solid transparent;
         }
-        .tab-link:hover {
-            background-color: #dedbd2;
-            color: #000;
-        }
+        .tab-link:hover { background-color: #f4f3ef; }
         .tab-link.active {
-            background-color: #ffffff;
             color: #1c5980;
-            border-bottom: 3px solid #2980b9;
+            border-bottom-color: #2980b9;
+            background-color: #f4f3ef;
         }
-        /* Main 2-column or full-width lab container */
-        .workbench {
-            max-width: 1260px;
-            margin: 18px auto;
-            padding: 0 16px 40px;
+
+        /* Centered Modal Stage */
+        .modal-stage {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 28px 16px 48px;
         }
-        .row-split {
-            display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: 18px;
-            align-items: start;
-        }
-        .row-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            align-items: start;
-        }
-        .row-4col {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        @media (max-width: 960px) {
-            .row-split, .row-2col, .row-4col { grid-template-columns: 1fr; }
-        }
-        /* Classic Lab Panel */
-        .panel {
+        .modal-card {
+            width: 100%;
+            max-width: 720px;
             background-color: #ffffff;
-            border: 1px solid #c8c6be;
-            border-radius: 2px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            border: 1px solid #b8b5ac;
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
-        .panel-head {
+        .modal-header {
             background-color: #f8f7f4;
             border-bottom: 1px solid #dcdad2;
-            padding: 8px 14px;
-            font-weight: 700;
-            font-size: 13.5px;
-            color: #2c3e50;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .panel-body {
-            padding: 14px;
-        }
-        fieldset {
-            border: 1px solid #d4d2ca;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            background: #faf9f6;
-        }
-        legend {
-            font-size: 12px;
+        .modal-title {
+            font-size: 15.5px;
             font-weight: 700;
-            color: #4a5568;
-            padding: 0 6px;
+            color: #1c5980;
         }
+        .step-bar {
+            display: flex;
+            background-color: #f1efe9;
+            border-bottom: 1px solid #dcdad2;
+        }
+        .step-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            background: none;
+            border: none;
+            border-right: 1px solid #dcdad2;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+        .step-btn:last-child { border-right: none; }
+        .step-btn.active {
+            background-color: #ffffff;
+            color: #1c5980;
+            border-bottom-color: #2980b9;
+            font-weight: 700;
+        }
+        .modal-body { padding: 22px; }
+        .modal-footer {
+            background-color: #f8f7f4;
+            border-top: 1px solid #dcdad2;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .step-pane { display: none; }
+        .step-pane.active { display: block; }
+
         label {
             display: block;
-            font-size: 12.5px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             color: #2d3748;
         }
-        select, input[type="file"], input[type="number"], input[type="text"], textarea {
+        select, input[type="file"], input[type="number"], textarea {
             width: 100%;
-            padding: 6px 8px;
+            padding: 8px 10px;
             border: 1px solid #b8b5ac;
-            border-radius: 2px;
+            border-radius: 3px;
             background-color: #ffffff;
-            font-size: 13px;
-            color: #1a202c;
-            margin-bottom: 10px;
+            font-size: 13.5px;
+            margin-bottom: 12px;
         }
-        .btn-primary {
-            background-color: #2980b9;
-            color: #ffffff;
-            border: 1px solid #1c5980;
-            padding: 7px 14px;
+        .btn {
+            padding: 8px 16px;
             font-size: 13px;
             font-weight: 600;
-            border-radius: 2px;
+            border-radius: 3px;
             cursor: pointer;
-            width: 100%;
-        }
-        .btn-primary:hover { background-color: #1f6391; }
-        .btn-secondary {
-            background-color: #ecf0f1;
-            color: #2c3e50;
-            border: 1px solid #bdc3c7;
-            padding: 5px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 2px;
-            cursor: pointer;
+            border: 1px solid transparent;
             text-decoration: none;
             display: inline-block;
         }
-        .btn-secondary:hover { background-color: #d5dbdb; }
-        /* Classic Lab Status Stickers */
-        .tag {
-            display: inline-block;
-            padding: 2px 7px;
-            font-size: 11.5px;
-            font-weight: 700;
-            border-radius: 2px;
-            border: 1px solid transparent;
-        }
-        .tag-red { background-color: #fde8e8; color: #9b1c1c; border-color: #f8b4b4; }
-        .tag-yellow { background-color: #fef3c7; color: #92400e; border-color: #fcd34d; }
-        .tag-green { background-color: #def7ec; color: #03543f; border-color: #84e1bc; }
-        .tag-blue { background-color: #e1effe; color: #1e429f; border-color: #a4cafe; }
+        .btn-primary { background-color: #2980b9; color: #ffffff; border-color: #1c5980; }
+        .btn-primary:hover { background-color: #1f6391; }
+        .btn-secondary { background-color: #ffffff; color: #333; border-color: #b8b5ac; }
+        .btn-secondary:hover { background-color: #f1efe9; }
+        .btn-run { background-color: #1e7e34; color: #ffffff; }
 
-        /* Classic Data Tables */
         table.lab-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            margin-top: 8px;
         }
         table.lab-table th, table.lab-table td {
             border: 1px solid #d6d4cc;
-            padding: 6px 10px;
+            padding: 7px 10px;
             text-align: left;
         }
-        table.lab-table th {
-            background-color: #f1efe9;
-            font-weight: 700;
-            color: #333;
+        table.lab-table th { background-color: #f1efe9; font-weight: 700; }
+        .img-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 10px 0;
         }
-        table.lab-table tr:nth-child(even) { background-color: #faf9f6; }
-
         .img-frame {
             border: 1px solid #b8b5ac;
             background-color: #faf9f6;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
         }
-        .img-frame img {
-            border: 1px solid #888;
-            display: block;
-            margin: 0 auto 6px;
+        .img-frame img { border: 1px solid #888; margin: 0 auto 6px; display: block; }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            border-radius: 3px;
         }
-        .bar-wrap {
-            background-color: #e2e0d8;
-            height: 12px;
-            border: 1px solid #c5c2b8;
-            overflow: hidden;
-        }
-        .bar-fill {
-            background-color: #2980b9;
-            height: 100%;
-        }
-        .note-box {
-            background-color: #fef9e7;
-            border-left: 4px solid #f39c12;
-            padding: 10px 12px;
-            font-size: 13px;
-            margin: 10px 0;
-        }
-        .info-box {
-            background-color: #ebf5fb;
-            border-left: 4px solid #2980b9;
-            padding: 10px 12px;
-            font-size: 13px;
-            margin: 10px 0;
-        }
+        .tag-red { background-color: #fde8e8; color: #9b1c1c; }
+        .tag-yellow { background-color: #fef3c7; color: #92400e; }
+        .tag-green { background-color: #def7ec; color: #03543f; }
         pre.code-block {
             background-color: #f8f8f5;
             border: 1px solid #d4d2ca;
             padding: 10px;
             overflow-x: auto;
-            color: #111;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
-    <!-- Top Header -->
     <header class="top-header">
-        <div>
-            <a href="/" class="repo-title">cnn-poultry-pathology-lab</a>
-            <span class="repo-sub">ResNet-18 Fecal Slide Screening / DVC Pipeline / CPU INT8 Check</span>
-        </div>
-        <div class="mono" style="font-size: 12px;">
-            Model: <strong>artifacts/training/model.pt</strong> ({{ 'Loaded' if health.fp32_model_ready else 'Missing' }}) |
+        <a href="/" class="repo-title">Project 02: Poultry Fecal Slide Classifier (ResNet-18 + DVC)</a>
+        <div class="mono" style="font-size:12px;">
             Val Acc: <strong>{{ ((scores.get('accuracy', 0.9167)) * 100) | round(1) }}%</strong>
         </div>
     </header>
 
-    <!-- Classic Sub-Navigation Bar -->
     <nav class="tab-bar">
-        <a href="/studio" class="tab-link {% if active_page == 'studio' %}active{% endif %}">1. Slide Workbench</a>
-        <a href="/batch-triage" class="tab-link {% if active_page == 'batch' %}active{% endif %}">2. Batch Flock Table</a>
-        <a href="/from-scratch-lab" class="tab-link {% if active_page == 'scratch' %}active{% endif %}">3. Conv2D &amp; Autograd Test</a>
-        <a href="/dvc-metrics" class="tab-link {% if active_page == 'dvc' %}active{% endif %}">4. DVC &amp; Quantization</a>
-        <a href="/health" class="tab-link {% if active_page == 'telemetry' %}active{% endif %}">5. Request Log &amp; Health</a>
-        <a href="/intro" class="tab-link {% if active_page == 'intro' %}active{% endif %}">6. Developer Notes</a>
-        <a href="/help" class="tab-link {% if active_page == 'help' %}active{% endif %}">7. Help &amp; User Guide</a>
-        <a href="/docs" class="tab-link {% if active_page == 'docs' %}active{% endif %}">8. REST API Tester (/docs)</a>
+        <a href="/studio" class="tab-link {% if active_page == 'studio' %}active{% endif %}">1. Slide Wizard</a>
+        <a href="/batch-triage" class="tab-link {% if active_page == 'batch' %}active{% endif %}">2. Batch Flock</a>
+        <a href="/from-scratch-lab" class="tab-link {% if active_page == 'scratch' %}active{% endif %}">3. Conv2D &amp; Autograd</a>
+        <a href="/dvc-metrics" class="tab-link {% if active_page == 'dvc' %}active{% endif %}">4. DVC &amp; INT8</a>
+        <a href="/health" class="tab-link {% if active_page == 'telemetry' %}active{% endif %}">5. Logs &amp; Health</a>
+        <a href="/intro" class="tab-link {% if active_page == 'intro' %}active{% endif %}">6. Dev Notes</a>
+        <a href="/help" class="tab-link {% if active_page == 'help' %}active{% endif %}">7. Help Guide</a>
+        <a href="/docs" class="tab-link {% if active_page == 'docs' %}active{% endif %}">8. API Tester (/docs)</a>
     </nav>
 
-    <div class="workbench">
+    <div class="modal-stage">
+        <div class="modal-card">
 
-        <!-- ===================================================================== -->
-        <!-- TAB 1: SLIDE WORKBENCH (/ or /studio)                                 -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'studio' %}
-        <div class="info-box">
-            <strong>Quick Start:</strong> Pick one of the 4 reference slides on the left or upload your own `.png`/`.jpg` crop, then click <strong>Run Slide Screening</strong>. Need help reading the numbers? Check the <a href="/help" style="color:#1c5980;font-weight:700;">Help &amp; User Guide</a> tab.
-        </div>
-
-        <div class="row-split">
-            <!-- Left Control Form -->
-            <div>
-                <div class="panel">
-                    <div class="panel-head">
-                        <span>Slide Input Controls</span>
-                        <span class="tag tag-blue">64x64 RGB</span>
-                    </div>
-                    <div class="panel-body">
-                        <form action="/studio-upload" method="post" enctype="multipart/form-data">
-                            <fieldset>
-                                <legend>1. Select Reference Slide</legend>
-                                <label for="sample_select">Built-in Validation Crop:</label>
-                                <select name="sample_select" id="sample_select">
-                                    {% for s in available_samples %}
-                                    <option value="{{ s }}" {% if diag_result and s in diag_result.image %}selected{% endif %}>{{ s }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;">
-                                    {% for s in available_samples %}
-                                    <a href="/studio?sample={{ s }}" class="btn-secondary">{{ s }}</a>
-                                    {% endfor %}
-                                </div>
-                            </fieldset>
-
-                            <fieldset>
-                                <legend>2. Or Upload Custom Slide Image</legend>
-                                <label for="file_input">Local PNG / JPG File:</label>
-                                <input type="file" name="file" id="file_input" accept="image/*" />
-                            </fieldset>
-
-                            <fieldset>
-                                <legend>3. Manual Review Cutoff</legend>
-                                <label for="thresh_input">Min Confidence % before flagging manual review:</label>
-                                <input type="number" name="sensitivity_threshold" id="thresh_input" value="70" min="50" max="95" step="5" />
-                            </fieldset>
-
-                            <button type="submit" class="btn-primary">Run Slide Screening</button>
-                        </form>
-                    </div>
-                </div>
-
-                {% if diag_result %}
-                <div class="panel">
-                    <div class="panel-head">
-                        <span>Image Quality Checks</span>
-                        <span class="mono">{{ diag_result.morphology.quality_status }}</span>
-                    </div>
-                    <div class="panel-body">
-                        <table class="lab-table">
-                            <tr>
-                                <th>Signal-to-Noise (SNR)</th>
-                                <td class="mono">{{ diag_result.morphology.snr_db }} dB</td>
-                            </tr>
-                            <tr>
-                                <th>Michelson Contrast</th>
-                                <td class="mono">{{ diag_result.morphology.michelson_contrast }}</td>
-                            </tr>
-                            <tr>
-                                <th>Laplacian Variance</th>
-                                <td class="mono">{{ diag_result.morphology.laplacian_sharpness }}</td>
-                            </tr>
-                            <tr>
-                                <th>High-Gradient Area</th>
-                                <td class="mono">{{ diag_result.morphology.focal_hotspot_area_pct }}% of crop</td>
-                            </tr>
-                            <tr>
-                                <th>Mean RGB Channels</th>
-                                <td class="mono">{{ diag_result.morphology.rgb_mean_intensity }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                {% endif %}
+            <!-- ===================================================================== -->
+            <!-- SECTION 1: SLIDE WORKBENCH WIZARD (/studio)                           -->
+            <!-- ===================================================================== -->
+            {% if active_page == 'studio' %}
+            <div class="modal-header">
+                <span class="modal-title">Slide Screening Wizard</span>
+                <span class="mono" id="step-label">Step 1 of 4</span>
             </div>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. Choose Slide</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. Cutoff &amp; Run</button>
+                <button type="button" class="step-btn" onclick="goStep(3)" id="tab-3">3. Heatmap &amp; Call</button>
+                <button type="button" class="step-btn" onclick="goStep(4)" id="tab-4">4. TTA &amp; Lab Note</button>
+            </div>
+            <form action="/studio-upload" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <!-- Step 1 -->
+                    <div class="step-pane active" id="pane-1">
+                        <p style="margin-bottom:12px;"><strong>Step 1:</strong> Pick one of the 4 reference microscopy slides or upload a local image file.</p>
+                        <label>Built-in Reference Slide:</label>
+                        <select name="sample_select">
+                            {% for s in available_samples %}
+                            <option value="{{ s }}" {% if diag_result and s in diag_result.image %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Or Upload Custom PNG / JPG Crop:</label>
+                        <input type="file" name="file" accept="image/*" />
+                    </div>
 
-            <!-- Right Diagnostic Readout -->
-            <div>
-                {% if diag_result %}
-                <div class="panel">
-                    <div class="panel-head">
-                        <span>Screening Output: Case {{ diag_result.case_id }} (File: {{ diag_result.image }})</span>
-                        {% if diag_result.triage_level == 'CRITICAL' %}
-                        <span class="tag tag-red">{{ diag_result.triage_badge }}</span>
-                        {% elif diag_result.triage_level in ['URGENT', 'REVIEW'] %}
-                        <span class="tag tag-yellow">{{ diag_result.triage_badge }}</span>
-                        {% else %}
-                        <span class="tag tag-green">{{ diag_result.triage_badge }}</span>
+                    <!-- Step 2 -->
+                    <div class="step-pane" id="pane-2">
+                        <p style="margin-bottom:12px;"><strong>Step 2:</strong> Set the minimum confidence percentage required before flagging manual lab review, then run screening.</p>
+                        <label>Manual Review Confidence Cutoff (%):</label>
+                        <input type="number" name="sensitivity_threshold" value="70" min="50" max="95" step="5" />
+                        <p style="font-size:12.5px; color:#555;">Click <strong>Run Slide Screening</strong> below to compute the ResNet-18 prediction, input-gradient heatmap, and 6-pass TTA variance.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-pane" id="pane-3">
+                        {% if diag_result %}
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <strong>Prediction: {{ diag_result.predicted_class }} ({{ diag_result.confidence_percent }}%)</strong>
+                            <span class="tag {% if diag_result.triage_level == 'CRITICAL' %}tag-red{% elif diag_result.triage_level in ['URGENT', 'REVIEW'] %}tag-yellow{% else %}tag-green{% endif %}">{{ diag_result.triage_badge }}</span>
+                        </div>
+                        <div class="img-pair">
+                            <div class="img-frame">
+                                <img src="data:image/png;base64,{{ diag_result.original_image_b64 }}" width="150" height="150" />
+                                <div style="font-size:12px;">Input Crop ({{ diag_result.image }})</div>
+                            </div>
+                            <div class="img-frame">
+                                <img src="data:image/png;base64,{{ diag_result.gradcam_overlay_b64 }}" width="150" height="150" />
+                                <div style="font-size:12px;">Input-Gradient Heatmap</div>
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
-                    <div class="panel-body">
-                        <div class="row-4col">
-                            <div style="border:1px solid #d6d4cc; padding:8px; background:#faf9f6;">
-                                <div style="font-size:11px; color:#555;">Predicted Class</div>
-                                <div style="font-size:16px; font-weight:700; color:#1c5980;">{{ diag_result.predicted_class }}</div>
-                            </div>
-                            <div style="border:1px solid #d6d4cc; padding:8px; background:#faf9f6;">
-                                <div style="font-size:11px; color:#555;">Softmax Confidence</div>
-                                <div class="mono" style="font-size:16px; font-weight:700;">{{ diag_result.confidence_percent }}% (+/-{{ diag_result.uncertainty.confidence_std_pct }}%)</div>
-                            </div>
-                            <div style="border:1px solid #d6d4cc; padding:8px; background:#faf9f6;">
-                                <div style="font-size:11px; color:#555;">6-Pass TTA Agreement</div>
-                                <div class="mono" style="font-size:16px; font-weight:700;">{{ diag_result.uncertainty.tta_view_agreement_pct }}% (H={{ diag_result.uncertainty.shannon_entropy_bits }}b)</div>
-                            </div>
-                            <div style="border:1px solid #d6d4cc; padding:8px; background:#faf9f6;">
-                                <div style="font-size:11px; color:#555;">OOD Energy Score</div>
-                                <div class="mono" style="font-size:16px; font-weight:700;">{{ diag_result.uncertainty.ood_energy_score }} ({{ 'In-Dist' if diag_result.uncertainty.is_in_distribution else 'Check Crop' }})</div>
-                            </div>
-                        </div>
 
-                        <div class="row-2col" style="margin-bottom:14px;">
-                            <div class="img-frame">
-                                <img src="data:image/png;base64,{{ diag_result.original_image_b64 }}" width="160" height="160" alt="Raw Slide" />
-                                <div style="font-size:12px; font-weight:600;">Input Slide (Resized 160x160 view)</div>
-                            </div>
-                            <div class="img-frame">
-                                <img src="data:image/png;base64,{{ diag_result.gradcam_overlay_b64 }}" width="160" height="160" alt="Gradient Overlay" />
-                                <div style="font-size:12px; font-weight:600;">Smoothed Input-Gradient Heatmap Overlay</div>
-                            </div>
-                        </div>
-
-                        <div style="margin-bottom:14px;">
-                            <div style="font-weight:700; font-size:12.5px; margin-bottom:6px;">Class Probability Distribution:</div>
-                            {% for cls_name, prob in diag_result.class_probabilities_percent.items() %}
-                            <div style="margin-bottom:6px;">
-                                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;">
-                                    <span>{{ cls_name }}</span>
-                                    <span class="mono">{{ prob }}%</span>
-                                </div>
-                                <div class="bar-wrap">
-                                    <div class="bar-fill" style="width: {{ prob }}%;"></div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        <table class="lab-table">
-                            <tr>
-                                <th style="width:160px;">Suspected Agent</th>
-                                <td>{{ diag_result.pathogen }} ({{ diag_result.biosecurity_level }})</td>
-                            </tr>
-                            <tr>
-                                <th>Confirmatory Lab Assay</th>
-                                <td>{{ diag_result.recommended_lab_tests }}</td>
-                            </tr>
-                            <tr>
-                                <th>Flock Management Note</th>
-                                <td>{{ diag_result.clinical_guidance }}</td>
-                            </tr>
+                    <!-- Step 4 -->
+                    <div class="step-pane" id="pane-4">
+                        {% if diag_result %}
+                        <table class="lab-table" style="margin-bottom:10px;">
+                            <tr><th>6-Pass TTA Std / Agreement</th><td class="mono">+/-{{ diag_result.uncertainty.confidence_std_pct }}% ({{ diag_result.uncertainty.tta_view_agreement_pct }}% agreement)</td></tr>
+                            <tr><th>Image SNR &amp; Hotspot Area</th><td class="mono">{{ diag_result.morphology.snr_db }} dB | {{ diag_result.morphology.focal_hotspot_area_pct }}% hotspot</td></tr>
+                            <tr><th>Suspected Agent</th><td>{{ diag_result.pathogen }} ({{ diag_result.biosecurity_level }})</td></tr>
+                            <tr><th>Confirmatory Assay</th><td>{{ diag_result.recommended_lab_tests }}</td></tr>
                         </table>
-
-                        <div class="note-box">
+                        <div style="background:#fef9e7; border-left:4px solid #f39c12; padding:10px; font-size:13px;">
                             {{ diag_result.ai_pathologist_narrative }}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 2: BATCH FLOCK TABLE (/batch-triage)                              -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'batch' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>Batch Flock Screening Queue (Sorted by Severity Priority)</span>
-                <a href="/batch-triage" class="btn-secondary">Re-run Batch Cohort</a>
-            </div>
-            <div class="panel-body">
-                <p style="margin-bottom:12px; font-size:13px;">
-                    When a poultry farm sends multiple fecal swabs at once, you don't want Newcastle Disease sitting at the bottom of the list. This table runs all 4 reference slides through ResNet-18 + 6-view TTA and sorts them by urgency (`CRITICAL` first, `ROUTINE` last).
-                </p>
-                {% if batch_results %}
-                <table class="lab-table">
-                    <thead>
-                        <tr>
-                            <th>Priority</th>
-                            <th>Slide Image</th>
-                            <th>Heatmap</th>
-                            <th>Source Folder</th>
-                            <th>Predicted Class</th>
-                            <th>Confidence / TTA Std</th>
-                            <th>Hotspot %</th>
-                            <th>Recommended Assay &amp; Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in batch_results %}
-                        <tr>
-                            <td>
-                                {% if item.triage_level == 'CRITICAL' %}
-                                <span class="tag tag-red">CRITICAL</span>
-                                {% elif item.triage_level == 'URGENT' %}
-                                <span class="tag tag-yellow">URGENT</span>
-                                {% else %}
-                                <span class="tag tag-green">{{ item.triage_level }}</span>
-                                {% endif %}
-                            </td>
-                            <td><img src="data:image/png;base64,{{ item.original_image_b64 }}" width="56" height="56" style="border:1px solid #999;" /></td>
-                            <td><img src="data:image/png;base64,{{ item.gradcam_overlay_b64 }}" width="56" height="56" style="border:1px solid #999;" /></td>
-                            <td class="mono">{{ item.ground_truth_folder }}</td>
-                            <td><strong>{{ item.predicted_class }}</strong></td>
-                            <td class="mono">{{ item.confidence_percent }}% (+/-{{ item.uncertainty.confidence_std_pct }}%)</td>
-                            <td class="mono">{{ item.morphology.focal_hotspot_area_pct }}%</td>
-                            <td style="font-size:12px;">
-                                <strong>{{ item.recommended_lab_tests }}</strong><br/>
-                                {{ item.clinical_guidance }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 3: CONV2D & AUTOGRAD TEST (/from-scratch-lab)                     -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'scratch' %}
-        <div class="row-2col">
-            <div class="panel">
-                <div class="panel-head">
-                    <span>Part A: Pure NumPy 2D Cross-Correlation &amp; MaxPool2D</span>
-                    <span class="tag tag-blue">No PyTorch Used</span>
-                </div>
-                <div class="panel-body">
-                    <p style="font-size:13px; margin-bottom:10px;">
-                        Before wrapping `torchvision.models.resnet18`, I wrote a plain NumPy 2D convolution loop (`conv2d_single_channel_from_scratch`) and a 2x2 max-pooling function to verify padding and stride math by hand. Pick a slide and a 3x3 filter below to inspect the raw feature maps.
-                    </p>
-                    <form action="/from-scratch-lab" method="post">
-                        <div class="row-2col">
-                            <div>
-                                <label>Slide Class:</label>
-                                <select name="sample_class">
-                                    {% for s in available_samples %}
-                                    <option value="{{ s }}" {% if kernel_lab and kernel_lab.sample_class == s %}selected{% endif %}>{{ s }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div>
-                                <label>3x3 Filter Kernel:</label>
-                                <select name="kernel_name">
-                                    {% for k in available_kernels %}
-                                    <option value="{{ k }}" {% if kernel_lab and kernel_lab.kernel_name == k %}selected{% endif %}>{{ k }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-primary">Apply 3x3 Filter &amp; 2x2 MaxPool</button>
-                    </form>
-
-                    {% if kernel_lab %}
-                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px;">
-                        <div class="img-frame">
-                            <img src="data:image/png;base64,{{ kernel_lab.original_b64 }}" width="110" height="110" />
-                            <div class="mono">Input {{ kernel_lab.input_shape }}</div>
-                        </div>
-                        <div class="img-frame">
-                            <img src="data:image/png;base64,{{ kernel_lab.conv_feature_map_b64 }}" width="110" height="110" />
-                            <div class="mono">ReLU(Conv) {{ kernel_lab.conv_output_shape }}</div>
-                        </div>
-                        <div class="img-frame">
-                            <img src="data:image/png;base64,{{ kernel_lab.maxpool_feature_map_b64 }}" width="110" height="110" />
-                            <div class="mono">MaxPool {{ kernel_lab.maxpool_output_shape }}</div>
-                        </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
+                    <div>
+                        <button type="submit" class="btn btn-run" id="btn-submit" style="display:none;">Run Slide Screening &check;</button>
+                        <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
                     </div>
-                    <pre class="code-block" style="margin-top:10px;">Filter: {{ kernel_lab.kernel_name }}
-Matrix: {{ kernel_lab.kernel_matrix }}
-Peak Activation: {{ kernel_lab.max_activation }} | Mean Activation: {{ kernel_lab.mean_activation }}</pre>
-                    {% endif %}
                 </div>
+            </form>
+            <script>
+                const maxSteps = 4;
+                let cur = 1;
+            </script>
+
+            <!-- ===================================================================== -->
+            <!-- SECTION 2: BATCH FLOCK MODAL (/batch-triage)                          -->
+            <!-- ===================================================================== -->
+            {% elif active_page == 'batch' %}
+            <div class="modal-header">
+                <span class="modal-title">Batch Flock Screening Modal</span>
+                <span class="mono" id="step-label">Step 1 of 2</span>
             </div>
-
-            <div class="panel">
-                <div class="panel-head">
-                    <span>Part B: Scalar Reverse-Mode Autograd (`ScalarValue`)</span>
-                    <span class="tag tag-green">Karpathy Micrograd Style</span>
-                </div>
-                <div class="panel-body">
-                    <p style="font-size:13px; margin-bottom:10px;">
-                        Computes forward output <code>a = tanh(x1*w1 + x2*w2 + b)</code> and runs a topological sort over the expression DAG to compute exact partial derivatives <code>da/dw1</code>, <code>da/dw2</code>, and <code>da/db</code>.
-                    </p>
-                    <form action="/from-scratch-lab" method="post">
-                        <input type="hidden" name="sample_class" value="{{ kernel_lab.sample_class if kernel_lab else 'Coccidiosis' }}" />
-                        <input type="hidden" name="kernel_name" value="{{ kernel_lab.kernel_name if kernel_lab else 'sobel_edge_x' }}" />
-                        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
-                            <div><label>x1</label><input type="number" step="0.1" name="x1" value="2.0" /></div>
-                            <div><label>x2</label><input type="number" step="0.1" name="x2" value="-1.5" /></div>
-                            <div><label>w1</label><input type="number" step="0.1" name="w1" value="0.8" /></div>
-                            <div><label>w2</label><input type="number" step="0.1" name="w2" value="-1.2" /></div>
-                            <div><label>b</label><input type="number" step="0.1" name="b" value="0.5" /></div>
-                        </div>
-                        <button type="submit" class="btn-primary">Run Forward &amp; Backward Pass</button>
-                    </form>
-
-                    {% if micrograd_lab %}
-                    <table class="lab-table" style="margin-top:14px;">
-                        <tr><th>Pre-activation (z = x1*w1 + x2*w2 + b)</th><td class="mono">{{ micrograd_lab.pre_activation_z }}</td></tr>
-                        <tr><th>Neuron Output a = tanh(z)</th><td class="mono"><strong>{{ micrograd_lab.tanh_output_a }}</strong></td></tr>
-                        <tr><th>Gradient dL/dw1</th><td class="mono">{{ micrograd_lab.gradients.dL_dw1 }}</td></tr>
-                        <tr><th>Gradient dL/dw2</th><td class="mono">{{ micrograd_lab.gradients.dL_dw2 }}</td></tr>
-                        <tr><th>Gradient dL/dx1</th><td class="mono">{{ micrograd_lab.gradients.dL_dx1 }}</td></tr>
-                        <tr><th>Gradient dL/dx2</th><td class="mono">{{ micrograd_lab.gradients.dL_dx2 }}</td></tr>
-                        <tr><th>Gradient dL/db (1 - tanh(z)^2)</th><td class="mono">{{ micrograd_lab.gradients.dL_db }}</td></tr>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. Urgent &amp; Critical Slides</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. Full Cohort Table</button>
+            </div>
+            <div class="modal-body">
+                <div class="step-pane active" id="pane-1">
+                    <p style="margin-bottom:10px;"><strong>Part 1:</strong> High-priority slides requiring immediate flock isolation or treatment.</p>
+                    <table class="lab-table">
+                        <thead><tr><th>Priority</th><th>Slide</th><th>Predicted Class</th><th>Recommended Assay</th></tr></thead>
+                        <tbody>
+                            {% for item in batch_results if item.triage_level != 'ROUTINE' %}
+                            <tr>
+                                <td><span class="tag tag-red">{{ item.triage_level }}</span></td>
+                                <td><img src="data:image/png;base64,{{ item.gradcam_overlay_b64 }}" width="48" height="48" /></td>
+                                <td><strong>{{ item.predicted_class }}</strong> ({{ item.confidence_percent }}%)</td>
+                                <td>{{ item.recommended_lab_tests }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
-                    {% endif %}
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <p style="margin-bottom:10px;"><strong>Part 2:</strong> Complete 4-slide cohort sorted by severity priority.</p>
+                    <table class="lab-table">
+                        <thead><tr><th>Priority</th><th>Folder</th><th>Predicted</th><th>Confidence</th><th>Action</th></tr></thead>
+                        <tbody>
+                            {% for item in batch_results %}
+                            <tr>
+                                <td><strong>{{ item.triage_level }}</strong></td>
+                                <td class="mono">{{ item.ground_truth_folder }}</td>
+                                <td>{{ item.predicted_class }}</td>
+                                <td class="mono">{{ item.confidence_percent }}%</td>
+                                <td style="font-size:12px;">{{ item.clinical_guidance }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 4: DVC PIPELINE & QUANTIZATION (/dvc-metrics or /metrics)         -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'dvc' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>DVC Reproducible Pipeline (`dvc.yaml`) &amp; Evaluation Metrics (`scores.json`)</span>
-                <a href="/metrics?format=json" target="_blank" class="btn-secondary">View Raw scores.json</a>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
+                <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
             </div>
-            <div class="panel-body">
-                <div class="row-4col">
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">Validation Accuracy</div>
-                        <div class="mono" style="font-size:18px; font-weight:700; color:#03543f;">{{ ((scores.get('accuracy', 0.9167)) * 100) | round(2) }}%</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">Macro F1 Score</div>
-                        <div class="mono" style="font-size:18px; font-weight:700;">{{ scores.get('f1_macro', 0.9161) }}</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">FP32 Latency (CPU)</div>
-                        <div class="mono" style="font-size:18px; font-weight:700;">{{ scores.get('fp32_latency_ms', 8.39) }} ms</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">INT8 Latency (CPU)</div>
-                        <div class="mono" style="font-size:18px; font-weight:700; color:#1c5980;">{{ scores.get('int8_latency_ms', 3.74) }} ms ({{ scores.get('latency_speedup_x', 2.24) }}x)</div>
-                    </div>
-                </div>
+            <script>const maxSteps = 2; let cur = 1;</script>
 
-                <div class="note-box">
-                    <strong>Caveat on PyTorch Dynamic Quantization (`quantize_dynamic`):</strong> Calling <code>torch.quantization.quantize_dynamic(model, {nn.Linear}, dtype=torch.qint8)</code> only quantizes the final linear classification head (`nn.Linear`), leaving the `nn.Conv2d` backbone weights in FP32. That is why the file size on disk only drops slightly (~42.7 MB to ~41.9 MB), even though CPU linear head dispatch still gets faster. Full Conv2d INT8 requires static post-training calibration (`prepare` + calibration loader + `convert`).
-                </div>
-
-                <div class="row-2col" style="margin-top:14px;">
-                    <div>
-                        <h4 style="margin-bottom:6px; font-size:13px;">Stage Definitions (`dvc.yaml`)</h4>
-                        <pre class="code-block">stages:
-  data_ingestion:
-    cmd: python src/cnn_classifier/pipeline/stage_01_data_ingestion.py
-    outs: [artifacts/data_ingestion/dataset]
-  prepare_base_model:
-    cmd: python src/cnn_classifier/pipeline/stage_02_prepare_base_model.py
-    outs: [artifacts/prepare_base_model/base_model_updated.pt]
-  training:
-    cmd: python src/cnn_classifier/pipeline/stage_03_model_trainer.py
-    outs: [artifacts/training/model.pt, artifacts/training/model_quantized.pt]
-  evaluation:
-    cmd: python src/cnn_classifier/pipeline/stage_04_model_evaluation.py
-    metrics: [scores.json: {cache: false}]</pre>
+            <!-- ===================================================================== -->
+            <!-- SECTION 3: CONV2D & AUTOGRAD WIZARD (/from-scratch-lab)               -->
+            <!-- ===================================================================== -->
+            {% elif active_page == 'scratch' %}
+            <div class="modal-header">
+                <span class="modal-title">Conv2D &amp; Scalar Autograd Wizard</span>
+                <span class="mono" id="step-label">Step 1 of 3</span>
+            </div>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. 2D Filter Setup</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. Scalar Autograd Setup</button>
+                <button type="button" class="step-btn" onclick="goStep(3)" id="tab-3">3. Feature Maps &amp; Gradients</button>
+            </div>
+            <form action="/from-scratch-lab" method="post">
+                <div class="modal-body">
+                    <div class="step-pane active" id="pane-1">
+                        <p style="margin-bottom:10px;"><strong>Step 1:</strong> Pick a slide class and a 3x3 convolution kernel to run through pure NumPy cross-correlation and 2x2 max-pooling.</p>
+                        <label>Slide Class:</label>
+                        <select name="sample_class">
+                            {% for s in available_samples %}
+                            <option value="{{ s }}" {% if kernel_lab and kernel_lab.sample_class == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>3x3 Kernel:</label>
+                        <select name="kernel_name">
+                            {% for k in available_kernels %}
+                            <option value="{{ k }}" {% if kernel_lab and kernel_lab.kernel_name == k %}selected{% endif %}>{{ k }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <div>
-                        <h4 style="margin-bottom:6px; font-size:13px;">Epoch History (`training_history.json`)</h4>
+                    <div class="step-pane" id="pane-2">
+                        <p style="margin-bottom:10px;"><strong>Step 2:</strong> Set scalar inputs and weights for `a = tanh(x1*w1 + x2*w2 + b)` reverse-mode autograd.</p>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div><label>Input x1:</label><input type="number" step="0.1" name="x1" value="2.0" /></div>
+                            <div><label>Input x2:</label><input type="number" step="0.1" name="x2" value="-1.5" /></div>
+                            <div><label>Weight w1:</label><input type="number" step="0.1" name="w1" value="0.8" /></div>
+                            <div><label>Weight w2:</label><input type="number" step="0.1" name="w2" value="-1.2" /></div>
+                        </div>
+                        <label>Bias b:</label>
+                        <input type="number" step="0.1" name="b" value="0.5" />
+                    </div>
+                    <div class="step-pane" id="pane-3">
+                        {% if kernel_lab %}
+                        <p style="margin-bottom:8px;"><strong>Filter Applied:</strong> <code>{{ kernel_lab.kernel_name }}</code> (Peak: {{ kernel_lab.max_activation }})</p>
+                        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px;">
+                            <div class="img-frame"><img src="data:image/png;base64,{{ kernel_lab.original_b64 }}" width="96" height="96" /><div class="mono">64x64</div></div>
+                            <div class="img-frame"><img src="data:image/png;base64,{{ kernel_lab.conv_feature_map_b64 }}" width="96" height="96" /><div class="mono">Conv2D</div></div>
+                            <div class="img-frame"><img src="data:image/png;base64,{{ kernel_lab.maxpool_feature_map_b64 }}" width="96" height="96" /><div class="mono">MaxPool 32x32</div></div>
+                        </div>
+                        {% endif %}
+                        {% if micrograd_lab %}
                         <table class="lab-table">
-                            <thead>
-                                <tr><th>Epoch</th><th>Train Loss</th><th>Train Acc</th><th>Val Loss</th><th>Val Acc</th></tr>
-                            </thead>
-                            <tbody>
-                                {% if history and history.get('train_loss') %}
-                                    {% for i in range(history.get('train_loss')|length) %}
-                                    <tr>
-                                        <td class="mono">#{{ i + 1 }}</td>
-                                        <td class="mono">{{ history['train_loss'][i] }}</td>
-                                        <td class="mono">{{ (history['train_acc'][i] * 100) | round(1) }}%</td>
-                                        <td class="mono">{{ history['val_loss'][i] }}</td>
-                                        <td class="mono"><strong>{{ (history['val_acc'][i] * 100) | round(1) }}%</strong></td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr><td colspan="5">Run training stage to populate epoch history.</td></tr>
-                                {% endif %}
-                            </tbody>
+                            <tr><th>Neuron Output `tanh(z)`</th><td class="mono"><strong>{{ micrograd_lab.tanh_output_a }}</strong></td></tr>
+                            <tr><th>Gradients `dL/dw1`, `dL/dw2`, `dL/db`</th><td class="mono">{{ micrograd_lab.gradients.dL_dw1 }}, {{ micrograd_lab.gradients.dL_dw2 }}, {{ micrograd_lab.gradients.dL_db }}</td></tr>
                         </table>
+                        {% endif %}
                     </div>
                 </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 5: REQUEST LOG & HEALTH (/health)                                 -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'telemetry' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>Diagnostic Audit Trail &amp; Readiness Check</span>
-                <a href="/health?format=json" target="_blank" class="btn-secondary">Raw /health JSON</a>
-            </div>
-            <div class="panel-body">
-                <div class="row-4col">
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">Service Status</div>
-                        <div class="mono" style="font-size:16px; font-weight:700; color:#03543f;">{{ health.status | upper }}</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">FP32 Checkpoint</div>
-                        <div class="mono" style="font-size:16px; font-weight:700;">{{ 'Present' if health.fp32_model_ready else 'Missing' }}</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">INT8 Checkpoint</div>
-                        <div class="mono" style="font-size:16px; font-weight:700;">{{ 'Present' if health.int8_quantized_model_ready else 'Missing' }}</div>
-                    </div>
-                    <div style="border:1px solid #d6d4cc; padding:10px; background:#faf9f6;">
-                        <div style="font-size:11px; color:#555;">Logged Screenings</div>
-                        <div class="mono" style="font-size:16px; font-weight:700;">{{ audit_log | length }} recent</div>
-                    </div>
-                </div>
-
-                <table class="lab-table">
-                    <thead>
-                        <tr>
-                            <th>Case ID</th>
-                            <th>Timestamp (UTC)</th>
-                            <th>Slide File</th>
-                            <th>Predicted Class</th>
-                            <th>Confidence</th>
-                            <th>6-Pass TTA Std</th>
-                            <th>Triage Level</th>
-                            <th>Latency</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in audit_log %}
-                        <tr>
-                            <td class="mono">{{ entry.case_id }}</td>
-                            <td class="mono">{{ entry.timestamp[:19] }}</td>
-                            <td class="mono">{{ entry.image }}</td>
-                            <td><strong>{{ entry.predicted_class }}</strong></td>
-                            <td class="mono">{{ entry.confidence_percent }}%</td>
-                            <td class="mono">+/-{{ entry.uncertainty_std_pct }}%</td>
-                            <td><span class="tag tag-blue">{{ entry.triage_level }}</span></td>
-                            <td class="mono">{{ entry.latency_ms }} ms</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 6: DEVELOPER NOTES (/intro)                                       -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'intro' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>Developer Notes: Why This Repo Exists &amp; How It Was Built</span>
-                <span class="mono">Git Tag: v2.0.0</span>
-            </div>
-            <div class="panel-body" style="line-height:1.65;">
-                <p style="margin-bottom:12px;">
-                    Most image classification tutorials stop the moment `model.fit()` finishes in a Jupyter notebook. When I built this poultry disease classifier (based on Krish Naik's DVC pipeline structure and Andrej Karpathy's backprop lectures), I wanted a repo where `dvc repro` actually runs end-to-end from a cold clone without hard-coded local paths.
-                </p>
-                <p style="margin-bottom:12px;">
-                    The dataset covers four classes of poultry fecal microscopy crops: <strong>Coccidiosis</strong>, <strong>Salmonella</strong>, <strong>Newcastle Disease</strong>, and <strong>Healthy</strong>. A single misclassified Newcastle slide is a big deal because it triggers flock quarantine, whereas a noisy blurry photo shouldn't set off a false alarm. That is why I added 6-pass Test-Time Augmentation (flipping the image horizontally/vertically, tweaking contrast/brightness, and running a 0.6px Gaussian blur) to measure how much the softmax probability wobbles across views. If the standard deviation across those 6 views jumps above 8.5%, or top confidence drops below the user's cutoff, the app flags the slide for manual lab review instead of guessing.
-                </p>
-
-                <h4 style="margin:14px 0 6px; color:#1c5980;">Repository Layout &amp; Engineering Notes</h4>
-                <table class="lab-table">
-                    <tr>
-                        <th style="width:260px;"><code>src/cnn_classifier/components/prepare_base_model.py</code></th>
-                        <td>Contains both the pure NumPy `conv2d_from_scratch` loop, a custom `FirstPrinciplesResidualBlock` with skip connections, and the `DiseaseClassifierTransferNet` wrapper around `resnet18`.</td>
-                    </tr>
-                    <tr>
-                        <th><code>src/cnn_classifier/components/clinical_cv_suite.py</code></th>
-                        <td>Implements input-gradient saliency maps (smoothed with two passes of a 3x3 Gaussian filter), 6-view TTA variance, SNR/Laplacian sharpness checks, and `ScalarValue` reverse-mode autograd.</td>
-                    </tr>
-                    <tr>
-                        <th><code>dvc.yaml</code> &amp; <code>params.yaml</code></th>
-                        <td>Splits the workflow into 4 stages (`data_ingestion`, `prepare_base_model`, `training`, `evaluation`). Running `dvc repro` only re-executes stages whose code or hyperparameters changed.</td>
-                    </tr>
-                    <tr>
-                        <th><code>app.py</code></th>
-                        <td>FastAPI server supporting both Krish Naik's JSON base64 payload (`POST /predict`) and multipart file uploads (`POST /predict-upload`).</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 7: HELP & USER GUIDE (/help)                                      -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'help' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>Help &amp; Step-by-Step User Manual</span>
-                <span class="tag tag-green">Operator Guide</span>
-            </div>
-            <div class="panel-body" style="line-height:1.65;">
-                <h4 style="color:#1c5980; margin-bottom:6px;">1. How to Screen a Single Microscopy Slide (Tab 1: Slide Workbench)</h4>
-                <ul style="margin-left:20px; margin-bottom:14px;">
-                    <li><strong>Using built-in samples:</strong> Click any of the quick sample buttons (`Coccidiosis`, `Healthy`, `Newcastle_Disease`, `Salmonella`) on the left panel, or select one from the dropdown and click <strong>Run Slide Screening</strong>.</li>
-                    <li><strong>Uploading your own image:</strong> Click <em>Choose File</em> under "2. Or Upload Custom Slide Image", select any `.png` or `.jpg` image from your computer, and click <strong>Run Slide Screening</strong>.</li>
-                    <li><strong>Reading the Heatmap:</strong> The right image shows where the network's input gradients peaked. Red/yellow areas contributed most to the predicted class; blue areas were ignored.</li>
-                    <li><strong>What TTA Agreement means:</strong> We run 6 variations of your image (original, horizontal flip, vertical flip, contrast boost, brightness dip, slight blur). `100%` agreement means all 6 variations predicted the exact same disease class.</li>
-                </ul>
-
-                <h4 style="color:#1c5980; margin-bottom:6px;">2. How to Screen a Whole Flock Queue (Tab 2: Batch Flock Table)</h4>
-                <ul style="margin-left:20px; margin-bottom:14px;">
-                    <li>Click <strong>2. Batch Flock Table</strong> in the top navigation bar.</li>
-                    <li>The system screens all 4 reference slides in one batch and sorts the table so high-risk detections (`CRITICAL` Newcastle Disease and `URGENT` Coccidiosis/Salmonella) appear at the top of the page above `ROUTINE` Healthy slides.</li>
-                </ul>
-
-                <h4 style="color:#1c5980; margin-bottom:6px;">3. How to Test 2D Convolutions &amp; Autograd (Tab 3: Conv2D &amp; Autograd Test)</h4>
-                <ul style="margin-left:20px; margin-bottom:14px;">
-                    <li>On the left side, pick a slide and a 3x3 filter (`sobel_edge_x`, `sobel_edge_y`, `laplacian_lesion_detector`, `sharpen_pathology`, or `gaussian_denoise`) and click <strong>Apply 3x3 Filter &amp; 2x2 MaxPool</strong> to see how edge detection and pooling shrink a `64x64` array to `32x32`.</li>
-                    <li>On the right side, change the inputs `x1, x2` or weights `w1, w2, b` and click <strong>Run Forward &amp; Backward Pass</strong> to see the exact partial derivatives calculated by `ScalarValue.backward()`.</li>
-                </ul>
-
-                <h4 style="color:#1c5980; margin-bottom:6px;">4. Troubleshooting Common Issues</h4>
-                <table class="lab-table">
-                    <tr>
-                        <th style="width:240px;">Why does a slide say "MANUAL PATHOLOGIST REVIEW REQUIRED"?</th>
-                        <td>Either the top class probability was lower than your "Min Confidence %" box (default 70%), or the 6-pass TTA standard deviation exceeded 8.5%. Lower the threshold to 55% if you want to force an automated call on noisy crops.</td>
-                    </tr>
-                    <tr>
-                        <th>How do I call the JSON API from Python or curl?</th>
-                        <td>Open <a href="/docs">Tab 8: REST API Tester (/docs)</a> to test `GET /health`, `GET /metrics`, and `POST /predict` directly inside your browser, or grab the raw OpenAPI spec at <a href="/openapi.json" target="_blank">/openapi.json</a>.</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- ===================================================================== -->
-        <!-- TAB 8: BUILT-IN INTERACTIVE REST API TESTER (/docs)                   -->
-        <!-- ===================================================================== -->
-        {% if active_page == 'docs' %}
-        <div class="panel">
-            <div class="panel-head">
-                <span>Interactive REST API Console &amp; Endpoint Reference (`/docs`)</span>
-                <div>
-                    <a href="/openapi.json" target="_blank" class="btn-secondary">Raw /openapi.json</a>
-                    <a href="/swagger-raw" target="_blank" class="btn-secondary">CDN Swagger UI (/swagger-raw)</a>
-                </div>
-            </div>
-            <div class="panel-body">
-                <p style="margin-bottom:12px;">
-                    This built-in API console runs directly in your browser without relying on external CDNs (`cdn.jsdelivr.net`), so it works offline and behind strict firewalls. Click any <strong>Send Request</strong> button below to inspect the live HTTP status code and JSON payload.
-                </p>
-
-                <div class="row-2col">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
                     <div>
-                        <fieldset>
-                            <legend>GET /health (Readiness Probe)</legend>
-                            <p style="font-size:12px; margin-bottom:8px;">Checks if `model.pt` and `model_quantized.pt` exist on disk.</p>
-                            <button type="button" onclick="testApi('GET', '/health?format=json')" class="btn-primary">Send GET /health</button>
-                        </fieldset>
-
-                        <fieldset>
-                            <legend>GET /metrics (DVC Scores &amp; Epoch History)</legend>
-                            <p style="font-size:12px; margin-bottom:8px;">Returns `scores.json` and `training_history.json` as JSON.</p>
-                            <button type="button" onclick="testApi('GET', '/metrics?format=json')" class="btn-primary">Send GET /metrics</button>
-                        </fieldset>
-
-                        <fieldset>
-                            <legend>POST /predict (Base64 Image Classification)</legend>
-                            <p style="font-size:12px; margin-bottom:8px;">Sends a 1x1 PNG test payload (or paste any base64 PNG string) to `POST /predict`.</p>
-                            <textarea id="api-b64" rows="3" class="mono">iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==</textarea>
-                            <button type="button" onclick="testPredict()" class="btn-primary">Send POST /predict</button>
-                        </fieldset>
-                    </div>
-
-                    <div>
-                        <label>Live HTTP Response Inspector:</label>
-                        <pre id="api-response-box" class="code-block" style="min-height:300px; max-height:460px; overflow-y:auto;">Click any "Send" button on the left to inspect the live JSON response from FastAPI.</pre>
+                        <button type="submit" class="btn btn-run" id="btn-submit" style="display:none;">Compute Conv2D &amp; Gradients &check;</button>
+                        <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </form>
+            <script>const maxSteps = 3; let cur = 3;</script>
 
-        <script>
-            async function testApi(method, url) {
-                const box = document.getElementById('api-response-box');
-                box.textContent = 'Sending ' + method + ' ' + url + ' ...';
-                try {
+            <!-- ===================================================================== -->
+            <!-- SECTION 4: DVC PIPELINE & QUANTIZATION MODAL (/dvc-metrics)           -->
+            <!-- ===================================================================== -->
+            {% elif active_page == 'dvc' %}
+            <div class="modal-header">
+                <span class="modal-title">DVC Reproducible Pipeline &amp; Quantization</span>
+                <span class="mono" id="step-label">Step 1 of 2</span>
+            </div>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. Scores &amp; INT8 Timing</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. DVC Stages &amp; Epochs</button>
+            </div>
+            <div class="modal-body">
+                <div class="step-pane active" id="pane-1">
+                    <table class="lab-table" style="margin-bottom:12px;">
+                        <tr><th>Validation Accuracy</th><td class="mono"><strong>{{ ((scores.get('accuracy', 0.9167)) * 100) | round(2) }}%</strong></td></tr>
+                        <tr><th>Macro F1 Score</th><td class="mono">{{ scores.get('f1_macro', 0.9161) }}</td></tr>
+                        <tr><th>FP32 vs. INT8 CPU Latency</th><td class="mono">{{ scores.get('fp32_latency_ms', 8.39) }} ms -&gt; {{ scores.get('int8_latency_ms', 3.74) }} ms ({{ scores.get('latency_speedup_x', 2.24) }}x)</td></tr>
+                    </table>
+                    <p style="font-size:12.5px; color:#555;">Note: PyTorch `quantize_dynamic` quantizes `nn.Linear` layers in INT8 while leaving `nn.Conv2d` in FP32.</p>
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <pre class="code-block">stages: data_ingestion -> prepare_base_model -> training -> evaluation (scores.json)</pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
+                <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
+            </div>
+            <script>const maxSteps = 2; let cur = 1;</script>
+
+            <!-- ===================================================================== -->
+            <!-- SECTION 5: DIAGNOSTIC AUDIT TRAIL & HEALTH (/health)                  -->
+            <!-- ===================================================================== -->
+            {% elif active_page == 'telemetry' %}
+            <div class="modal-header">
+                <span class="modal-title">Diagnostic Audit Trail &amp; Readiness</span>
+                <span class="mono" id="step-label">Step 1 of 2</span>
+            </div>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. Model Readiness</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. Screening Log</button>
+            </div>
+            <div class="modal-body">
+                <div class="step-pane active" id="pane-1">
+                    <table class="lab-table">
+                        <tr><th>Service Status</th><td class="mono"><strong>{{ health.status | upper }}</strong></td></tr>
+                        <tr><th>FP32 Checkpoint (`model.pt`)</th><td class="mono">{{ health.fp32_model_ready }}</td></tr>
+                        <tr><th>INT8 Checkpoint (`model_quantized.pt`)</th><td class="mono">{{ health.int8_quantized_model_ready }}</td></tr>
+                    </table>
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <table class="lab-table">
+                        <thead><tr><th>Case ID</th><th>File</th><th>Predicted</th><th>Confidence</th><th>Latency</th></tr></thead>
+                        <tbody>
+                            {% for entry in audit_log[:6] %}
+                            <tr>
+                                <td class="mono">{{ entry.case_id }}</td>
+                                <td class="mono">{{ entry.image }}</td>
+                                <td><strong>{{ entry.predicted_class }}</strong></td>
+                                <td class="mono">{{ entry.confidence_percent }}%</td>
+                                <td class="mono">{{ entry.latency_ms }} ms</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
+                <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
+            </div>
+            <script>const maxSteps = 2; let cur = 1;</script>
+
+            <!-- ===================================================================== -->
+            <!-- SECTION 6, 7, 8: DEV NOTES, HELP GUIDE & API TESTER                   -->
+            <!-- ===================================================================== -->
+            {% elif active_page in ['intro', 'help', 'docs'] %}
+            <div class="modal-header">
+                <span class="modal-title">
+                    {% if active_page == 'intro' %}Developer Notes{% elif active_page == 'help' %}Help &amp; Operator Guide{% else %}Interactive REST API Tester (`/docs`){% endif %}
+                </span>
+                <span class="mono" id="step-label">Step 1 of 2</span>
+            </div>
+            <div class="step-bar">
+                <button type="button" class="step-btn active" onclick="goStep(1)" id="tab-1">1. Part 1</button>
+                <button type="button" class="step-btn" onclick="goStep(2)" id="tab-2">2. Part 2</button>
+            </div>
+            <div class="modal-body">
+                {% if active_page == 'intro' %}
+                <div class="step-pane active" id="pane-1">
+                    <h4 style="margin-bottom:8px;">Part 1: Reproducible 4-Stage DVC Setup</h4>
+                    <p>This repository splits poultry microscopy classification into 4 DVC stages (`data_ingestion`, `prepare_base_model`, `training`, `evaluation`) so `dvc repro` runs cleanly from a fresh clone.</p>
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <h4 style="margin-bottom:8px;">Part 2: 6-Pass TTA &amp; Input-Gradient Maps</h4>
+                    <p>Each slide is evaluated across 6 augmented views (flips, contrast/brightness shifts, and blur) to measure prediction variance before issuing a clinical triage call.</p>
+                </div>
+                {% elif active_page == 'help' %}
+                <div class="step-pane active" id="pane-1">
+                    <h4 style="margin-bottom:8px;">Step 1: Using the Slide Screening Wizard</h4>
+                    <p>In <strong>1. Slide Wizard</strong>, pick a reference slide or upload your own file in Step 1, click <strong>Next Step</strong> to set your confidence cutoff in Step 2, and click <strong>Run Slide Screening</strong> to view the heatmap in Step 3.</p>
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <h4 style="margin-bottom:8px;">Step 2: Using Batch Flock &amp; API Tester</h4>
+                    <p>Use <strong>2. Batch Flock</strong> to sort multiple slides by urgency, or open <strong>8. API Tester (/docs)</strong> to test `GET /health`, `GET /metrics`, and `POST /predict` directly.</p>
+                </div>
+                {% else %}
+                <div class="step-pane active" id="pane-1">
+                    <p style="margin-bottom:10px;">Click an endpoint below to send a live request and view the response in Step 2:</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button type="button" class="btn btn-primary" onclick="testApi('GET', '/health?format=json')">1. Send GET /health</button>
+                        <button type="button" class="btn btn-primary" onclick="testApi('GET', '/metrics?format=json')">2. Send GET /metrics</button>
+                    </div>
+                </div>
+                <div class="step-pane" id="pane-2">
+                    <pre id="api-response-box" class="code-block" style="min-height:200px;">Click an endpoint button in Step 1 to view the JSON response.</pre>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-prev" onclick="goStep(cur - 1)" style="visibility:hidden;">&larr; Previous</button>
+                <button type="button" class="btn btn-primary" id="btn-next" onclick="goStep(cur + 1)">Next Step &rarr;</button>
+            </div>
+            <script>
+                const maxSteps = 2; let cur = 1;
+                async function testApi(method, url) {
+                    goStep(2);
+                    const box = document.getElementById('api-response-box');
+                    box.textContent = 'Requesting ' + method + ' ' + url + ' ...';
                     const res = await fetch(url, { method: method, headers: { 'Accept': 'application/json' } });
                     const data = await res.json();
-                    box.textContent = 'HTTP ' + res.status + ' ' + res.statusText + '\n\n' + JSON.stringify(data, null, 2);
-                } catch (err) {
-                    box.textContent = 'Error: ' + err;
+                    box.textContent = 'HTTP ' + res.status + '\n\n' + JSON.stringify(data, null, 2);
                 }
-            }
-            async function testPredict() {
-                const box = document.getElementById('api-response-box');
-                const b64 = document.getElementById('api-b64').value.trim();
-                box.textContent = 'Sending POST /predict ...';
-                try {
-                    const res = await fetch('/predict', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({ image: b64 })
-                    });
-                    const data = await res.json();
-                    if (data.gradcam_overlay_b64) {
-                        data.gradcam_overlay_b64 = data.gradcam_overlay_b64.slice(0, 48) + '... [truncated in console]';
-                    }
-                    box.textContent = 'HTTP ' + res.status + ' ' + res.statusText + '\n\n' + JSON.stringify(data, null, 2);
-                } catch (err) {
-                    box.textContent = 'Error: ' + err;
-                }
-            }
-        </script>
-        {% endif %}
+            </script>
+            {% endif %}
 
+        </div>
     </div>
+
+    <script>
+        function goStep(n) {
+            if (n < 1 || n > maxSteps) return;
+            cur = n;
+            for (let i = 1; i <= maxSteps; i++) {
+                const p = document.getElementById('pane-' + i);
+                const t = document.getElementById('tab-' + i);
+                if (p) p.classList.toggle('active', i === n);
+                if (t) t.classList.toggle('active', i === n);
+            }
+            const lbl = document.getElementById('step-label');
+            if (lbl) lbl.textContent = 'Step ' + n + ' of ' + maxSteps;
+            const prev = document.getElementById('btn-prev');
+            const next = document.getElementById('btn-next');
+            const sub = document.getElementById('btn-submit');
+            if (prev) prev.style.visibility = (n > 1) ? 'visible' : 'hidden';
+            if (next) next.style.display = (n < maxSteps) ? 'inline-block' : 'none';
+            if (sub) sub.style.display = (n === 2) ? 'inline-block' : 'none';
+        }
+        goStep(cur);
+    </script>
 </body>
 </html>
