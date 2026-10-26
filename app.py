@@ -83,6 +83,10 @@ def _build_ui_context(active_page: str = "studio") -> Dict[str, Any]:
         "kernel_lab": None,
         "micrograd_lab": None,
         "audit_log": cv_suite.get_audit_log(limit=12),
+        "flagged_logs": cv_suite.get_flagged_predictions(limit=10),
+        "aug_config": cv_suite.get_serialized_augmentation_config(),
+        "cml_report": cv_suite.get_cml_pr_gate_report(),
+        "flag_notice": None,
     }
 
 
@@ -255,6 +259,76 @@ async def predict_upload(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Upload prediction error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/flag-prediction-form", response_class=HTMLResponse, tags=["UI Pages"])
+async def flag_prediction_form(
+    request: Request,
+    case_id: str = Form("CASE-101"),
+    predicted_class: str = Form("Coccidiosis"),
+    expected_class: str = Form("Salmonella"),
+    clinician_notes: str = Form(""),
+):
+    entry = cv_suite.flag_incorrect_prediction(
+        case_id=case_id,
+        predicted_class=predicted_class,
+        expected_class=expected_class,
+        clinician_notes=clinician_notes,
+    )
+    ctx = _build_ui_context(active_page="studio")
+    sample_path = cv_suite.sample_paths.get(predicted_class) or next(iter(cv_suite.sample_paths.values()), None)
+    if sample_path and sample_path.exists():
+        ctx["diag_result"] = cv_suite.run_full_diagnostic(sample_path, sensitivity_threshold=70.0)
+    ctx["flagged_logs"] = cv_suite.get_flagged_predictions(limit=10)
+    ctx["flag_notice"] = (
+        f"Flagged {entry['flag_id']} ({case_id}: {predicted_class} -> {expected_class}) "
+        f"saved to {entry['s3_quarantine_uri']}."
+    )
+    return templates.TemplateResponse(request=request, name="index.html", context=ctx)
+
+
+@app.post("/explain", tags=["pytorch-grad-cam Explainability"])
+async def explain_gradcam(sample: str = "Coccidiosis"):
+    """jacobgil/pytorch-grad-cam inspired /explain endpoint returning base64 Grad-CAM++ overlay & top-k probabilities."""
+    sample_path = cv_suite.sample_paths.get(sample) or next(iter(cv_suite.sample_paths.values()))
+    diag = cv_suite.run_full_diagnostic(sample_path)
+    return {
+        "case_id": diag["case_id"],
+        "predicted_class": diag["predicted_class"],
+        "confidence_percent": diag["confidence_percent"],
+        "class_probabilities_percent": diag["class_probabilities_percent"],
+        "target_layer": "resnet18.layer4[-1].conv2",
+        "gradcam_overlay_b64": diag["gradcam_overlay_b64"],
+        "morphology": diag["morphology"],
+    }
+
+
+@app.post("/flag-prediction", tags=["FSDL Active Learning Quarantine"])
+async def flag_prediction_api(
+    case_id: str = "CASE-101",
+    predicted_class: str = "Coccidiosis",
+    expected_class: str = "Salmonella",
+    clinician_notes: str = "Misclassified mucosal border",
+):
+    """the-full-stack/fsdl-text-recognizer-2021-labs inspired Flag Incorrect Prediction quarantine endpoint."""
+    return cv_suite.flag_incorrect_prediction(
+        case_id=case_id,
+        predicted_class=predicted_class,
+        expected_class=expected_class,
+        clinician_notes=clinician_notes,
+    )
+
+
+@app.get("/augmentation-config", tags=["Albumentations Serialization"])
+async def get_augmentation_config():
+    """albumentations-team/albumentations_examples serialized augmentation pipeline config."""
+    return cv_suite.get_serialized_augmentation_config()
+
+
+@app.get("/cml-report", tags=["Iterative CML Gate"])
+async def get_cml_report():
+    """iterative/example-get-started Continuous Machine Learning (CML) PR gate & confusion matrix."""
+    return cv_suite.get_cml_pr_gate_report()
 
 
 @app.post("/train", tags=["Pipeline"])

@@ -581,5 +581,203 @@
     "uncertainty_std_pct": 0.0,
     "hotspot_area_pct": 1.42,
     "latency_ms": 582.64
+  },
+  {
+    "case_id": "CV-46711FFB",
+    "timestamp": "2026-10-26T13:22:02.202576+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 576.69
+  },
+  {
+    "case_id": "CV-4169911E",
+    "timestamp": "2026-10-26T13:22:20.269053+00:00",
+    "image": "prediction_inputImage.png",
+    "predicted_class": "Salmonella",
+    "confidence_percent": 99.9,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.06,
+    "hotspot_area_pct": 2.42,
+    "latency_ms": 434.86
+  },
+  {
+    "case_id": "CV-FF448C70",
+    "timestamp": "2026-10-26T13:22:48.538958+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 398.71
+  },
+  {
+    "case_id": "CV-EB9DAB4A",
+    "timestamp": "2026-10-26T13:22:48.946363+00:00",
+    "image": "healthy_train_000.png",
+    "predicted_class": "Healthy",
+    "confidence_percent": 100.0,
+    "triage_level": "ROUTINE",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 2.17,
+    "latency_ms": 396.19
+  },
+  {
+    "case_id": "CV-8A8AFEF8",
+    "timestamp": "2026-10-26T13:22:49.358012+00:00",
+    "image": "newcastle_disease_train_000.png",
+    "predicted_class": "Newcastle_Disease",
+    "confidence_percent": 100.0,
+    "triage_level": "CRITICAL",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.51,
+    "latency_ms": 390.33
+  },
+  {
+    "case_id": "CV-42B217D2",
+    "timestamp": "2026-10-26T13:22:49.806654+00:00",
+    "image": "salmonella_train_000.png",
+    "predicted_class": "Salmonella",
+    "confidence_percent": 99.99,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 0.59,
+    "latency_ms": 432.23
+  },
+  {
+    "case_id": "CV-8D3EE05B",
+    "timestamp": "2026-10-26T13:43:35.988149+00:00",
+    "image": "prediction_inputImage.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 3.64,
+    "latency_ms": 408.37
+  },
+  {
+    "case_id": "CV-0B5D7C0C",
+    "timestamp": "2026-10-26T13:43:36.461079+00:00",
+    "image": "prediction_inputImage.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 3.64,
+    "latency_ms": 459.17
+  },
+  {
+    "case_id": "CV-6838D24F",
+    "timestamp": "2026-10-26T13:43:36.931391+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 409.89
+  },
+  {
+    "case_id": "CV-4FCE84E6",
+    "timestamp": "2026-10-26T13:45:38.101052+00:00",
+    "image": "prediction_inputImage.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 3.64,
+    "latency_ms": 400.65
+  },
+  {
+    "case_id": "CV-D7747F1C",
+    "timestamp": "2026-10-26T13:45:38.444884+00:00",
+    "image": "prediction_inputImage.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 3.64,
+    "latency_ms": 333.63
+  },
+  {
+    "case_id": "CV-38E55372",
+    "timestamp": "2026-10-26T13:45:38.820168+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 337.1
+  },
+  {
+    "case_id": "CV-0B0F6E40",
+    "timestamp": "2026-10-26T13:45:39.202556+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 322.59
+  },
+  {
+    "case_id": "CV-513F149B",
+    "timestamp": "2026-10-26T13:45:39.551008+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 312.45
+  },
+  {
+    "case_id": "CV-243330F8",
+    "timestamp": "2026-10-26T13:45:39.877503+00:00",
+    "image": "healthy_train_000.png",
+    "predicted_class": "Healthy",
+    "confidence_percent": 100.0,
+    "triage_level": "ROUTINE",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 2.17,
+    "latency_ms": 330.11
+  },
+  {
+    "case_id": "CV-154D3B81",
+    "timestamp": "2026-10-26T13:45:40.261072+00:00",
+    "image": "newcastle_disease_train_000.png",
+    "predicted_class": "Newcastle_Disease",
+    "confidence_percent": 100.0,
+    "triage_level": "CRITICAL",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.51,
+    "latency_ms": 359.74
+  },
+  {
+    "case_id": "CV-FBF82E8C",
+    "timestamp": "2026-10-26T13:45:40.627701+00:00",
+    "image": "salmonella_train_000.png",
+    "predicted_class": "Salmonella",
+    "confidence_percent": 99.99,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 0.59,
+    "latency_ms": 347.32
+  },
+  {
+    "case_id": "CV-917BF627",
+    "timestamp": "2026-10-26T13:47:05.737018+00:00",
+    "image": "coccidiosis_train_000.png",
+    "predicted_class": "Coccidiosis",
+    "confidence_percent": 100.0,
+    "triage_level": "URGENT",
+    "uncertainty_std_pct": 0.0,
+    "hotspot_area_pct": 1.42,
+    "latency_ms": 412.22
   }
 ]

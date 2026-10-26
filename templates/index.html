@@ -264,6 +264,9 @@
 
                     <!-- Step 3 -->
                     <div class="step-pane" id="pane-3">
+                        {% if flag_notice %}
+                        <div style="background:#def7ec; border:1px solid #84e1bc; color:#03543f; padding:8px 10px; margin-bottom:10px; font-size:12.5px;" class="mono">{{ flag_notice }}</div>
+                        {% endif %}
                         {% if diag_result %}
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <strong>Prediction: {{ diag_result.predicted_class }} ({{ diag_result.confidence_percent }}%)</strong>
@@ -271,14 +274,30 @@
                         </div>
                         <div class="img-pair">
                             <div class="img-frame">
-                                <img src="data:image/png;base64,{{ diag_result.original_image_b64 }}" width="150" height="150" />
+                                <img src="data:image/png;base64,{{ diag_result.original_image_b64 }}" width="145" height="145" />
                                 <div style="font-size:12px;">Input Crop ({{ diag_result.image }})</div>
                             </div>
                             <div class="img-frame">
-                                <img src="data:image/png;base64,{{ diag_result.gradcam_overlay_b64 }}" width="150" height="150" />
-                                <div style="font-size:12px;">Input-Gradient Heatmap</div>
+                                <img src="data:image/png;base64,{{ diag_result.gradcam_overlay_b64 }}" width="145" height="145" />
+                                <div style="font-size:12px;">pytorch-grad-cam Overlay</div>
                             </div>
                         </div>
+                        <strong style="font-size:12.5px;">Top-K Class Probabilities (DVC-DL-Demo Readout):</strong>
+                        <table class="lab-table">
+                            <tbody>
+                                {% for cls_name, prob in diag_result.class_probabilities_percent.items() %}
+                                <tr>
+                                    <td style="width:35%;"><strong>{{ cls_name }}</strong></td>
+                                    <td style="width:45%;">
+                                        <div style="background:#e5e7eb; height:10px; border-radius:2px; overflow:hidden;">
+                                            <div style="background:#2980b9; height:10px; width:{{ prob }}%;"></div>
+                                        </div>
+                                    </td>
+                                    <td class="mono" style="width:20%;">{{ prob }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                         {% endif %}
                     </div>
 
@@ -291,8 +310,15 @@
                             <tr><th>Suspected Agent</th><td>{{ diag_result.pathogen }} ({{ diag_result.biosecurity_level }})</td></tr>
                             <tr><th>Confirmatory Assay</th><td>{{ diag_result.recommended_lab_tests }}</td></tr>
                         </table>
-                        <div style="background:#fef9e7; border-left:4px solid #f39c12; padding:10px; font-size:13px;">
+                        <div style="background:#fef9e7; border-left:4px solid #f39c12; padding:8px 10px; font-size:12.5px; margin-bottom:10px;">
                             {{ diag_result.ai_pathologist_narrative }}
+                        </div>
+                        <div style="border:1px solid #d6d4cc; background:#f8f7f4; padding:10px; font-size:12.5px;">
+                            <strong>[FSDL-2021 Active Learning] Flag Incorrect Prediction to S3 Quarantine:</strong>
+                            <div style="display:flex; gap:8px; margin-top:6px; align-items:center;">
+                                <span class="mono">Case: {{ diag_result.case_id }}</span>
+                                <a href="/docs" class="btn btn-secondary" style="padding:4px 10px; font-size:12px;">Flag / Relabel via API</a>
+                            </div>
                         </div>
                         {% endif %}
                     </div>
@@ -453,7 +479,22 @@
                     <p style="font-size:12.5px; color:#555;">Note: PyTorch `quantize_dynamic` quantizes `nn.Linear` layers in INT8 while leaving `nn.Conv2d` in FP32.</p>
                 </div>
                 <div class="step-pane" id="pane-2">
-                    <pre class="code-block">stages: data_ingestion -> prepare_base_model -> training -> evaluation (scores.json)</pre>
+                    <p style="font-size:12.5px; margin-bottom:6px;"><strong>Iterative CML Pull Request Gate (`{{ cml_report.base_branch }}` vs `{{ cml_report.head_branch }}`):</strong> Macro ROC-AUC {{ cml_report.macro_roc_auc_main }} -&gt; <strong>{{ cml_report.macro_roc_auc_head }} ({{ cml_report.roc_auc_delta }})</strong></p>
+                    <table class="lab-table" style="margin-bottom:10px;">
+                        <thead>
+                            <tr><th>True \ Pred</th>{% for c in cml_report.classes %}<th>{{ c[:10] }}</th>{% endfor %}</tr>
+                        </thead>
+                        <tbody>
+                            {% for row in cml_report.confusion_matrix %}
+                            <tr>
+                                <td><strong>{{ cml_report.classes[loop.index0][:12] }}</strong></td>
+                                {% for cell in row %}<td class="mono">{{ cell }}</td>{% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <pre class="code-block">stages: data_ingestion -> prepare_base_model -> training -> evaluation (scores.json)
+serialized_aug: artifacts/augmentation_pipeline.json ({{ aug_config.transform.transforms | length }} transforms)</pre>
                 </div>
             </div>
             <div class="modal-footer">
@@ -544,6 +585,10 @@
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <button type="button" class="btn btn-primary" onclick="testApi('GET', '/health?format=json')">1. Send GET /health</button>
                         <button type="button" class="btn btn-primary" onclick="testApi('GET', '/metrics?format=json')">2. Send GET /metrics</button>
+                        <button type="button" class="btn btn-primary" onclick="testApi('POST', '/explain?sample=Coccidiosis')">3. Send POST /explain (pytorch-grad-cam Overlay &amp; Top-K)</button>
+                        <button type="button" class="btn btn-primary" onclick="testApi('POST', '/flag-prediction?case_id=CASE-101&amp;predicted_class=Coccidiosis&amp;expected_class=Salmonella')">4. Send POST /flag-prediction (FSDL S3 Quarantine)</button>
+                        <button type="button" class="btn btn-primary" onclick="testApi('GET', '/augmentation-config')">5. Send GET /augmentation-config (Albumentations JSON)</button>
+                        <button type="button" class="btn btn-primary" onclick="testApi('GET', '/cml-report')">6. Send GET /cml-report (Iterative CML Confusion Matrix)</button>
                     </div>
                 </div>
                 <div class="step-pane" id="pane-2">
